@@ -5,7 +5,6 @@
 #ifndef B_PLUS_TREE_LEAFNODE_H
 #define B_PLUS_TREE_LEAFNODE_H
 
-#include "BPlusTree.h"
 #include "Node.hpp"
 
 template <typename K, typename V, int CAPACITY>
@@ -30,21 +29,26 @@ public:
 
         int l = 0, r = _size - 1;
         int m = 0;
+        bool found = false;
         while (l <= r) {
-            if (_entries[m].key <= key) {
-                l = m + 1;
-            } else {
-                r = m;
-            }
             m = (l + r) / 2;
+            if (_entries[m].key < key) {
+                l = m + 1;
+            } else if (_entries[m].key == key) {
+                found = true;
+                break;
+            } else {
+                r = m - 1;
+            }
         }
 
-        if (_entries[m].key == key) {
+        if (found) {
             _entries[m].val = val;
             return true;
         }
+        m = l;
 
-        for (int i = m; i < _size; i++) {
+        for (int i = _size - 1; i >= m; i--) {
             _entries[i + 1] = _entries[i];
         }
 
@@ -55,15 +59,14 @@ public:
     }
 
     std::string toString() {
-        std::string ret = "leaf node: ";
+        std::string ret;
         for (int i = 0; i < _size; i++) {
-            ret += std::to_string(_entries[i].key);
+            ret += "(" + std::to_string(_entries[i].key) + "," + std::to_string(_entries[i].val) + ")";
             if (i != _size - 1)
                 ret += " ";
         }
         return ret;
     }
-
 
 private:
     entry _entries[CAPACITY];
@@ -71,14 +74,5 @@ private:
 
 };
 
-//template <typename K, typename V, int CAPACITY>
-//std::ostream &operator<<(std::ostream &os, LeafNode<K, V, CAPACITY> const &m) {
-//    for (int i = 0; i < m._size; i++) {
-//        os << m._entries[i].key << std::endl;
-//        if (i != m._size - 1)
-//            os << " ";
-//    }
-//    return os;
-//}
 
 #endif //B_PLUS_TREE_LEAFNODE_H
