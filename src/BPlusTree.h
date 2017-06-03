@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include "LeafNode.h"
-#include "Node.hpp"
+#include "node.h"
 
 template <typename K, typename V>
 class BPlusTree {
@@ -16,11 +16,15 @@ public:
         std::cout << "B+ tree is initialized." << std::endl;
         root = new LeafNode<K, V, 5>();
     }
-    void insert(K k, V v) {
+    void insert(const K &k, const V &v) {
         if (root->insert(k,v))
             std::cout << k << "," << v << " is inserted" << std::endl;
         else
             std::cout << "full!" << std::endl;
+    }
+
+    bool point_search(const K &k, V &v) const {
+
     }
 
 public:

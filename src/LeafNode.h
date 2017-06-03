@@ -5,7 +5,7 @@
 #ifndef B_PLUS_TREE_LEAFNODE_H
 #define B_PLUS_TREE_LEAFNODE_H
 
-#include "Node.hpp"
+#include "node.h"
 
 template <typename K, typename V, int CAPACITY>
 class LeafNode: public Node<K, V>{
@@ -21,41 +21,39 @@ public:
 
     LeafNode():_size(0){};
 
-    bool insert(K key, V val) {
+    bool insert(const K &key, const V &val) {
 
         if (_size >= CAPACITY) {
             return false;
         }
 
-        int l = 0, r = _size - 1;
-        int m = 0;
-        bool found = false;
-        while (l <= r) {
-            m = (l + r) / 2;
-            if (_entries[m].key < key) {
-                l = m + 1;
-            } else if (_entries[m].key == key) {
-                found = true;
-                break;
-            } else {
-                r = m - 1;
-            }
-        }
+        int insert_position;
+        const bool found = search_key_position(key, insert_position);
 
         if (found) {
-            _entries[m].val = val;
+            // update the entry.
+            _entries[insert_position].val = val;
+            return true;
+        } else {
+
+            // make an empty slot for new entry
+            for (int i = _size - 1; i >= insert_position; i--) {
+                _entries[i + 1] = _entries[i];
+            }
+
+            // insert the new entry.
+            _entries[insert_position] = entry(key, val);
+            _size++;
             return true;
         }
-        m = l;
+    }
 
-        for (int i = _size - 1; i >= m; i--) {
-            _entries[i + 1] = _entries[i];
-        }
-
-
-        _entries[m] = entry(key, val);
-        _size ++;
-        return true;
+    bool point_search(const K &k, V &v) const {
+        int position;
+        const bool found = search_key_position(k, position);
+        if (found)
+            v = _entries[position].val;
+        return found;
     }
 
     std::string toString() {
@@ -69,6 +67,26 @@ public:
     }
 
 private:
+
+    bool search_key_position(const K &key, int & position) const {
+        int l = 0, r = _size - 1;
+        int m = 0;
+        bool found = false;
+        while (l <= r) {
+            m = (l + r) / 2;
+            if (_entries[m].key < key) {
+                l = m + 1;
+            } else if (_entries[m].key == key) {
+                position = m;
+                return true;
+            } else {
+                r = m - 1;
+            }
+        }
+        position = l;
+        return false;
+    }
+
     entry _entries[CAPACITY];
     int _size;
 

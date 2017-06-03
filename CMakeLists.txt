@@ -28,18 +28,19 @@ set_target_properties(libgtest PROPERTIES
 include_directories("${source_dir}/googletest/include"
         "${source_dir}/googlemock/include")
 
+# Used to generate lib when there are some cpp files.
 set(SOURCE_FILES
-        src/BPlusTree.h
-        src/LeafNode.h
-        src/main.cpp
-        src/Node.hpp)
+        src/main.cc
+        )
+add_library(libtree ${SOURCE_FILES})
 
+# Generate b_tree executable
+add_executable(b_tree src/main.cc)
+target_link_libraries(b_tree libtree)
+
+
+# Generate btree_test executable for test
 set(TEST_FILES
-        test/test.cpp test/leaf_node_test.cpp)
-
-add_executable(b_tree ${SOURCE_FILES})
-
-add_executable(ggtest ${TEST_FILES})
-
-target_link_libraries(ggtest
-        libgtest)
+        test/test.cc test/leaf_node_test.cc)
+add_executable(btree_test ${TEST_FILES})
+target_link_libraries(btree_test libgtest)

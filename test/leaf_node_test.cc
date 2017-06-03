@@ -33,3 +33,19 @@ TEST(LeafNode, InsertionAndUpdate) {
     leaf_node.insert(1, 3);
     EXPECT_EQ("(1,3)", leaf_node.toString());
 }
+
+TEST(LeafNode, Search) {
+    LeafNode<int, int, 10> leaf_node;
+    leaf_node.insert(1, 5);
+    leaf_node.insert(5, 8);
+    leaf_node.insert(-1, 222);
+    int result;
+    EXPECT_EQ(true, leaf_node.point_search(1, result));
+    EXPECT_EQ(5, result);
+
+    EXPECT_EQ(true, leaf_node.point_search(5, result));
+    EXPECT_EQ(8, result);
+
+    EXPECT_EQ(true, leaf_node.point_search(-1, result));
+    EXPECT_EQ(222, result);
+}
