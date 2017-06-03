@@ -49,3 +49,46 @@ TEST(LeafNode, Search) {
     EXPECT_EQ(true, leaf_node.point_search(-1, result));
     EXPECT_EQ(222, result);
 }
+
+TEST(LeafNode, Update) {
+    LeafNode<int, int, 10> leaf_node;
+    leaf_node.insert(5, 5);
+    leaf_node.insert(9, 10);
+    leaf_node.insert(3, 100);
+
+    int value;
+
+    EXPECT_EQ(true, leaf_node.update(5, 100));
+    leaf_node.point_search(5, value);
+    EXPECT_EQ(100, value);
+
+    EXPECT_EQ(true, leaf_node.update(3, 20));
+    leaf_node.point_search(3, value);
+    EXPECT_EQ(20, value);
+
+    EXPECT_EQ(true, leaf_node.update(9, 44));
+    leaf_node.point_search(9, value);
+    EXPECT_EQ(44, value);
+}
+
+TEST(LeafNode, Delete) {
+    LeafNode<int, int, 5> leaf_node;
+    leaf_node.insert(5, 5);
+    leaf_node.insert(6, 6);
+    leaf_node.insert(7, 7);
+    leaf_node.insert(3, 3);
+
+    EXPECT_EQ(true, leaf_node.delete_key(6));
+    EXPECT_EQ("(3,3) (5,5) (7,7)", leaf_node.toString());
+
+    EXPECT_EQ(false, leaf_node.delete_key(6));
+
+    EXPECT_EQ(true, leaf_node.delete_key(3));
+    EXPECT_EQ("(5,5) (7,7)", leaf_node.toString());
+
+    EXPECT_EQ(true, leaf_node.delete_key(7));
+    EXPECT_EQ("(5,5)", leaf_node.toString());
+
+    EXPECT_EQ(true, leaf_node.delete_key(5));
+    EXPECT_EQ("", leaf_node.toString());
+}

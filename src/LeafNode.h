@@ -56,6 +56,30 @@ public:
         return found;
     }
 
+    virtual bool update(const K &k, const V &v) {
+        int position;
+        const bool found = search_key_position(k, position);
+        if (found) {
+            _entries[position].val = v;
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+    virtual bool delete_key(const K &k) {
+        int position;
+        const bool found = search_key_position(k, position);
+        if (!found)
+            return false;
+
+        for (int i = position; i < _size - 1; ++i) {
+            _entries[i] = _entries[i + 1];
+        }
+        -- _size;
+        return true;
+    }
+
     std::string toString() {
         std::string ret;
         for (int i = 0; i < _size; i++) {
