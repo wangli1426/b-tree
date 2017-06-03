@@ -1,4 +1,4 @@
-#include "BPlusTree.h"
+#include "b_plus_tree.h"
 
 int main() {
     BPlusTree<int, int> tree;

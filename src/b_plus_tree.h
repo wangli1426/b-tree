@@ -6,14 +6,13 @@
 #define B_PLUS_TREE_BPLUSTREE_H
 
 #include <iostream>
-#include "LeafNode.h"
+#include "leaf_node.h"
 #include "node.h"
 
 template <typename K, typename V>
 class BPlusTree {
 public:
     BPlusTree() {
-        std::cout << "B+ tree is initialized." << std::endl;
         root = new LeafNode<K, V, 5>();
     }
     void insert(const K &k, const V &v) {
@@ -24,7 +23,7 @@ public:
     }
 
     bool point_search(const K &k, V &v) const {
-
+        return root->point_search(k, v);
     }
 
 public:

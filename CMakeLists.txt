@@ -31,7 +31,7 @@ include_directories("${source_dir}/googletest/include"
 # Used to generate lib when there are some cpp files.
 set(SOURCE_FILES
         src/main.cc
-        )
+        src/insert_split_info.h)
 add_library(libtree ${SOURCE_FILES})
 
 # Generate b_tree executable
