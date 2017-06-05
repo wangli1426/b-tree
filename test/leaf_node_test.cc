@@ -119,6 +119,7 @@ TEST(LeafNode, SplitInsertRight) {
     EXPECT_EQ(true, leaf->insert_with_split_support(7, 7, split));
     EXPECT_EQ("(3,3) (4,4)", split.left->toString());
     EXPECT_EQ("(5,5) (6,6) (7,7)", split.right->toString());
+    EXPECT_EQ(5, split.boundary_key);
     delete split.left;
     delete split.right;
 }
