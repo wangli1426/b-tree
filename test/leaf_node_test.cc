@@ -95,30 +95,30 @@ TEST(LeafNode, Delete) {
 
 TEST(LeafNode, SplitInsertLeft) {
     LeafNode<int, int, 4> *leaf = new LeafNode<int, int, 4>();
-    Split<int, int> * split;
+    Split<int, int> split;
     EXPECT_EQ(false, leaf->insert_with_split_support(3, 3, split));
     EXPECT_EQ(false, leaf->insert_with_split_support(4, 4, split));
     EXPECT_EQ(false, leaf->insert_with_split_support(6, 6, split));
     EXPECT_EQ(false, leaf->insert_with_split_support(5, 5, split));
 
     EXPECT_EQ(true, leaf->insert_with_split_support(1, 1, split));
-    EXPECT_EQ("(1,1) (3,3) (4,4)", split->left->toString());
-    EXPECT_EQ("(5,5) (6,6)", split->right->toString());
-    delete split->left;
-    delete split->right;
+    EXPECT_EQ("(1,1) (3,3) (4,4)", split.left->toString());
+    EXPECT_EQ("(5,5) (6,6)", split.right->toString());
+    delete split.left;
+    delete split.right;
 }
 
 TEST(LeafNode, SplitInsertRight) {
     LeafNode<int, int, 4> *leaf = new LeafNode<int, int, 4>();
-    Split<int, int> * split;
+    Split<int, int> split;
     EXPECT_EQ(false, leaf->insert_with_split_support(3, 3, split));
     EXPECT_EQ(false, leaf->insert_with_split_support(4, 4, split));
     EXPECT_EQ(false, leaf->insert_with_split_support(6, 6, split));
     EXPECT_EQ(false, leaf->insert_with_split_support(5, 5, split));
 
     EXPECT_EQ(true, leaf->insert_with_split_support(7, 7, split));
-    EXPECT_EQ("(3,3) (4,4)", split->left->toString());
-    EXPECT_EQ("(5,5) (6,6) (7,7)", split->right->toString());
-    delete split->left;
-    delete split->right;
+    EXPECT_EQ("(3,3) (4,4)", split.left->toString());
+    EXPECT_EQ("(5,5) (6,6) (7,7)", split.right->toString());
+    delete split.left;
+    delete split.right;
 }

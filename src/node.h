@@ -25,7 +25,7 @@ public:
     virtual bool point_search(const K &k, V &v) const = 0;
     virtual bool update(const K &k, const V &v) = 0;
     virtual bool delete_key(const K &k) = 0;
-    virtual bool insert_with_split_support(const K &key, const V &val, Split<K, V>* &split) = 0;
+    virtual bool insert_with_split_support(const K &key, const V &val, Split<K, V> &split) = 0;
 };
 
 

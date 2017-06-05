@@ -30,8 +30,7 @@ include_directories("${source_dir}/googletest/include"
 
 # Used to generate lib when there are some cpp files.
 set(SOURCE_FILES
-        src/main.cc
-        src/insert_split_info.h)
+        src/main.cc)
 add_library(libtree ${SOURCE_FILES})
 
 # Generate b_tree executable
@@ -41,6 +40,6 @@ target_link_libraries(b_tree libtree)
 
 # Generate btree_test executable for test
 set(TEST_FILES
-        test/test.cc test/leaf_node_test.cc)
+        test/test.cc test/leaf_node_test.cc test/inner_node_test.cc)
 add_executable(btree_test ${TEST_FILES})
 target_link_libraries(btree_test libgtest)

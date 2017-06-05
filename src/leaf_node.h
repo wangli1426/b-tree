@@ -52,7 +52,7 @@ public:
         }
     }
 
-    bool insert_with_split_support(const K &key, const V &val, Split<K, V>* &split) {
+    bool insert_with_split_support(const K &key, const V &val, Split<K, V> &split) {
         int insert_position;
         const bool found = search_key_position(key, insert_position);
 
@@ -94,10 +94,9 @@ public:
             else
                 right->insert(key, val);
 
-            split = new Split<K, V>();
-            split->left = left;
-            split->right = right;
-            split->boundary_key = right->entries_[0].key;
+            split.left = left;
+            split.right = right;
+            split.boundary_key = right->entries_[0].key;
             return true;
         }
 
@@ -166,6 +165,9 @@ private:
         return false;
     }
 
+    /**
+     * TODO: store the keys and the values separately, to improve data access locality.
+     */
     Entry entries_[CAPACITY];
     int size_;
 
