@@ -91,5 +91,5 @@ TEST(InnerNodeTest, InnerNodeSplit2) {
 
     EXPECT_EQ(true, inner_node.insert_with_split_support(9, 9, split));
     EXPECT_EQ("6 [(1,1) (3,3)] [(6,6)]", split.left->toString());
-//    EXPECT_EQ("8 [(6,6)] [(8,8) (9,9)]", split.right->toString());
+    EXPECT_EQ(" [(8,8) (9,9)]", split.right->toString());
 }

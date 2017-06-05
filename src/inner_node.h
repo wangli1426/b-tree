@@ -31,11 +31,11 @@ public:
     }
 
     bool point_search(const K &k, V &v) const {
-
+        return true;
     }
 
     bool update(const K &k, const V &v) {
-
+        return true;
     }
 
     bool delete_key(const K &k) {
@@ -44,14 +44,16 @@ public:
 
     void insert_inner_node(Node<K, V> * innerNode, K boundary_key, int insert_position) {
         // Move the keys
-        for (int i = size_ - 2; i >= insert_position; --i) {
+        for (int i = size_ - 2; i >= insert_position && i >=0; --i) {
             key_[i + 1] = key_[i];
         }
+
         // Insert the key
-        key_[insert_position] = boundary_key;
+        if (size_ >= 1)
+            key_[insert_position] = boundary_key;
 
         // Move the nodes
-        for (int i = size_ - 1; i > insert_position; --i) {
+        for (int i = size_ - 1; i > insert_position && i >=0; --i) {
             child_[i + 1] = child_[i];
         }
         // Insert the nodes
@@ -82,7 +84,6 @@ public:
         bool insert_to_first_half = target_node_index < CAPACITY / 2;
 
         //
-//        int boundary_key_index = (CAPACITY - 1 + insert_to_first_half) / 2 - insert_to_first_half;
         int boundary_key_index = CAPACITY / 2 - insert_to_first_half;
         InnerNode<K, V, CAPACITY> *left = this;
         InnerNode<K, V, CAPACITY> *right = new InnerNode<K, V, CAPACITY>();
@@ -103,8 +104,6 @@ public:
              -- left->size_;
         }
 
-        std::cout << right->toString() << std::endl;
-
         // insert the right split child node.
         InnerNode<K, V, CAPACITY> *host_for_node = insert_to_first_half ? left : right;
         int inner_node_insert_position = host_for_node->locate_child_index(local_split.boundary_key);
@@ -113,9 +112,7 @@ public:
         // write the remaining content in the split data structure.
         split.left = left;
         split.right = right;
-        std::cout << right->toString() << std::endl;
-//        split.boundary_key = right->get_leftmost_key();
-        std::cout << "after: " << right->toString() << std::endl;
+        split.boundary_key = right->get_leftmost_key();
         return true;
     }
 
@@ -147,7 +144,6 @@ public:
         return child_[0]->get_leftmost_key();
     }
 private:
-//    FRIEND_TEST(InnerNodeTest, BarReturnsZeroOnNull);
     // Locate the node that might contain the particular key.
     int locate_child_index(K key) {
         if (size_ == 0)
