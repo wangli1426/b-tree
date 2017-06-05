@@ -13,10 +13,11 @@ class InnerNode: public Node<K, V> {
     friend class InnerNodeTest;
 public:
     InnerNode(): size_(0) {};
-    InnerNode(Node<K, V>* left, Node<K, V>* right, K boundary) {
+    InnerNode(Node<K, V>* left, Node<K, V>* right) {
         size_ = 2;
-        key_[0] = boundary;
+        key_[0] = left->get_leftmost_key();
         child_[0] = left;
+        key_[1] = right->get_leftmost_key();
         child_[1] = right;
     }
     ~InnerNode() {
@@ -43,21 +44,15 @@ public:
     }
 
     void insert_inner_node(Node<K, V> * innerNode, K boundary_key, int insert_position) {
-        // Move the keys
-        for (int i = size_ - 2; i >= insert_position && i >=0; --i) {
+
+        // make room for insertion.
+        for (int i = size_ - 1; i >= insert_position; --i) {
             key_[i + 1] = key_[i];
-        }
-
-        // Insert the key
-        if (size_ >= 1)
-            key_[insert_position] = boundary_key;
-
-        // Move the nodes
-        for (int i = size_ - 1; i > insert_position && i >=0; --i) {
             child_[i + 1] = child_[i];
         }
-        // Insert the nodes
-        child_[insert_position + 1] = innerNode;
+
+        key_[insert_position] = boundary_key;
+        child_[insert_position] = innerNode;
 
         ++ size_;
     }
@@ -76,7 +71,7 @@ public:
         // The leaf node was split.
         if (size_ < CAPACITY) {
             // There is available slot in the current node for the new child.
-            insert_inner_node(local_split.right, local_split.boundary_key, target_node_index);
+            insert_inner_node(local_split.right, local_split.boundary_key, target_node_index + 1);
             return false;
         }
 
@@ -84,30 +79,22 @@ public:
         bool insert_to_first_half = target_node_index < CAPACITY / 2;
 
         //
-        int boundary_key_index = CAPACITY / 2 - insert_to_first_half;
+        int start_index_for_right = CAPACITY / 2;
         InnerNode<K, V, CAPACITY> *left = this;
         InnerNode<K, V, CAPACITY> *right = new InnerNode<K, V, CAPACITY>();
 
-        // get the boundary_key
-
-        // move the keys to the right node;
-        // all the keys greater than the boundary key belong to the right split node
-        for (int i = boundary_key_index + 1, j = 0; i < size_ -1; ++i, ++j) {
+        // move the keys and children to the right node
+        for (int i = start_index_for_right, j = 0; i < size_; ++i, ++j) {
             right->key_[j] = key_[i];
-        }
-
-        // move the the child;
-        // all the children larger than the boundary key belong to the right split node
-        for (int i = boundary_key_index + 1, j = 0; i < size_; ++i, ++j) {
             right->child_[j] = child_[i];
             ++ right->size_;
-             -- left->size_;
+            -- left->size_;
         }
 
-        // insert the right split child node.
+        // insert the new child node to the appropriate split node.
         InnerNode<K, V, CAPACITY> *host_for_node = insert_to_first_half ? left : right;
         int inner_node_insert_position = host_for_node->locate_child_index(local_split.boundary_key);
-        host_for_node->insert_inner_node(local_split.right, local_split.boundary_key, inner_node_insert_position);
+        host_for_node->insert_inner_node(local_split.right, local_split.boundary_key, inner_node_insert_position + 1);
 
         // write the remaining content in the split data structure.
         split.left = left;
@@ -122,9 +109,9 @@ public:
 
     std::string keys_to_string() {
         std::string ret = "";
-        for (int i = 0; i < size_ - 1; ++i) {
+        for (int i = 1; i < size_; ++i) {
             ret += std::to_string(key_[i]);
-            if (i < size_ - 2)
+            if (i < size_ - 1)
                 ret += " ";
         }
         return ret;
@@ -148,7 +135,7 @@ private:
     int locate_child_index(K key) {
         if (size_ == 0)
             return -1;
-        int l = 0, r = size_ - 2;
+        int l = 0, r = size_ - 1;
         int m;
         bool found = false;
         while(l <= r) {
@@ -164,13 +151,18 @@ private:
         }
 
         if (found) {
-            return m + 1;
+            return m;
         } else {
-            return l;
+            return l -  1;
         }
+
+        // linear scan TODO: test the performance gap between binary search and linear scan.
+//        int i = 0;
+//        while (i < size_ && key_[i] < key) ++i;
+//        return i - 1;
     }
 
-    K key_[CAPACITY - 1];
+    K key_[CAPACITY]; // key_[0] is the smallest key for this inner node. The key boundaries start from index 1.
     Node<K, V>* child_[CAPACITY];
     int size_;
 };

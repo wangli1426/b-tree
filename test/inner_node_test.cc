@@ -13,7 +13,8 @@ TEST(InnerNodeTest, InsertWithoutSplit) {
     Node<int, int>* right_leaf = new LeafNode<int, int, 2>();;
     left_leaf->insert(1, 1);
     right_leaf->insert(3, 3);
-    InnerNode<int, int, 4> inner_node(left_leaf, right_leaf, 3);
+    InnerNode<int, int, 4> inner_node(left_leaf, right_leaf);
+    std::cout << inner_node.toString() << std::endl;
     inner_node.insert(2, 2);
     EXPECT_EQ("3 [(1,1) (2,2)] [(3,3)]", inner_node.toString());
 
@@ -27,7 +28,7 @@ TEST(InnerNodeTest, InsertWithoutSplitWithSplitSupport) {
     Node<int, int>* right_leaf = new LeafNode<int, int, 2>();;
     left_leaf->insert(1, 1);
     right_leaf->insert(3, 3);
-    InnerNode<int, int, 4> inner_node(left_leaf, right_leaf, 3);
+    InnerNode<int, int, 4> inner_node(left_leaf, right_leaf);
 
     Split<int, int> split;
     EXPECT_EQ(false, inner_node.insert_with_split_support(2, 2, split));
@@ -42,7 +43,7 @@ TEST(InnerNodeTest, InsertWithSplitWithSplitSupport) {
     Node<int, int>* right_leaf = new LeafNode<int, int, 2>();;
     left_leaf->insert(1, 1);
     right_leaf->insert(6, 6);
-    InnerNode<int, int, 4> inner_node(left_leaf, right_leaf, 6);
+    InnerNode<int, int, 4> inner_node(left_leaf, right_leaf);
 
     Split<int, int> split;
     EXPECT_EQ(false, inner_node.insert_with_split_support(4, 4, split));
@@ -69,7 +70,7 @@ TEST(InnerNodeTest, InnerNodeSplit1) {
     left_leaf->insert(3, 3);
     right_leaf->insert(6, 6);
     right_leaf->insert(8, 8);
-    InnerNode<int, int, 2> inner_node(left_leaf, right_leaf, 6);
+    InnerNode<int, int, 2> inner_node(left_leaf, right_leaf);
 
     Split<int, int> split;
 
@@ -85,11 +86,11 @@ TEST(InnerNodeTest, InnerNodeSplit2) {
     left_leaf->insert(3, 3);
     right_leaf->insert(6, 6);
     right_leaf->insert(8, 8);
-    InnerNode<int, int, 2> inner_node(left_leaf, right_leaf, 6);
+    InnerNode<int, int, 2> inner_node(left_leaf, right_leaf);
 
     Split<int, int> split;
 
     EXPECT_EQ(true, inner_node.insert_with_split_support(9, 9, split));
-    EXPECT_EQ("6 [(1,1) (3,3)] [(6,6)]", split.left->toString());
-    EXPECT_EQ(" [(8,8) (9,9)]", split.right->toString());
+    EXPECT_EQ(" [(1,1) (3,3)]", split.left->toString());
+    EXPECT_EQ("8 [(6,6)] [(8,8) (9,9)]", split.right->toString());
 }

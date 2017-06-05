@@ -10,7 +10,7 @@ int main() {
     left_leaf->insert(3, 3);
     right_leaf->insert(6, 6);
     right_leaf->insert(8, 8);
-    InnerNode<int, int, 2> inner_node(left_leaf, right_leaf, 6);
+    InnerNode<int, int, 2> inner_node(left_leaf, right_leaf);
 
     Split<int, int> split;
 
