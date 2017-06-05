@@ -144,6 +144,10 @@ public:
         return ret;
     }
 
+    const K get_leftmost_key() const {
+        return entries_[0].key;
+    }
+
 private:
 
     bool search_key_position(const K &key, int & position) const {

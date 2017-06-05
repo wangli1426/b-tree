@@ -6,6 +6,7 @@
 #define B_TREE_INNER_NODE_H
 
 #include <gtest/gtest_prod.h>
+#include <iostream>
 #include "node.h"
 template <typename K, typename V, int CAPACITY>
 class InnerNode: public Node<K, V> {
@@ -102,6 +103,8 @@ public:
              -- left->size_;
         }
 
+        std::cout << right->toString() << std::endl;
+
         // insert the right split child node.
         InnerNode<K, V, CAPACITY> *host_for_node = insert_to_first_half ? left : right;
         int inner_node_insert_position = host_for_node->locate_child_index(local_split.boundary_key);
@@ -110,7 +113,9 @@ public:
         // write the remaining content in the split data structure.
         split.left = left;
         split.right = right;
-        split.boundary_key = right->key_[0];
+        std::cout << right->toString() << std::endl;
+//        split.boundary_key = right->get_leftmost_key();
+        std::cout << "after: " << right->toString() << std::endl;
         return true;
     }
 
@@ -138,10 +143,15 @@ public:
         return ret;
     }
 
+    const K get_leftmost_key() const {
+        return child_[0]->get_leftmost_key();
+    }
 private:
 //    FRIEND_TEST(InnerNodeTest, BarReturnsZeroOnNull);
     // Locate the node that might contain the particular key.
     int locate_child_index(K key) {
+        if (size_ == 0)
+            return -1;
         int l = 0, r = size_ - 2;
         int m;
         bool found = false;
