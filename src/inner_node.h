@@ -87,9 +87,13 @@ public:
         for (int i = start_index_for_right, j = 0; i < size_; ++i, ++j) {
             right->key_[j] = key_[i];
             right->child_[j] = child_[i];
-            ++ right->size_;
-            -- left->size_;
+//            ++ right->size_;
+//            -- left->size_;
         }
+
+        const int moved = size_ - start_index_for_right;
+        right->size_ += moved;
+        left->size_ -= moved;
 
         // insert the new child node to the appropriate split node.
         InnerNode<K, V, CAPACITY> *host_for_node = insert_to_first_half ? left : right;
@@ -104,6 +108,7 @@ public:
     }
 
     std::string toString() {
+//        return std::to_string(this->id) + ": " + keys_to_string() + " " + nodes_to_string(); // for debug
         return keys_to_string() + " " + nodes_to_string();
     }
 

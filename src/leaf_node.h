@@ -135,6 +135,7 @@ public:
     }
 
     std::string toString() {
+//        std::string ret = std::to_string(this->id) + ": "; // for debug
         std::string ret;
         for (int i = 0; i < size_; i++) {
             ret += "(" + std::to_string(entries_[i].key) + "," + std::to_string(entries_[i].val) + ")";

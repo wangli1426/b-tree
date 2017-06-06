@@ -4,18 +4,26 @@
 #include "inner_node.h"
 
 int main() {
-    Node<int, int>* left_leaf = new LeafNode<int, int, 2>();
-    Node<int, int>* right_leaf = new LeafNode<int, int, 2>();;
-    left_leaf->insert(1, 1);
-    left_leaf->insert(3, 3);
-    right_leaf->insert(6, 6);
-    right_leaf->insert(8, 8);
-    InnerNode<int, int, 2> inner_node(left_leaf, right_leaf);
+    BPlusTree<int, int, 4> tree;
+    tree.insert(1, 1);
+    tree.insert(3, 3);
+    tree.insert(2, 2);
+    tree.insert(6, 6);
 
-    Split<int, int> split;
 
-    inner_node.insert_with_split_support(9, 9, split);
-    std::cout << split.left->toString() << std::endl;
-    std::cout << split.right->toString() << std::endl;
-    delete split.right;
+    tree.insert(10, 10);
+
+    tree.insert(9, 9);
+
+    tree.insert(8, 8);
+
+    tree.insert(7, 7);
+    tree.insert(4, 4);
+    tree.insert(5, 5);
+
+    tree.insert(11, 11);
+
+    std::cout << tree.toString() << std::endl;
+    tree.insert(12, 12);
+    std::cout << tree.toString() << std::endl;
 }

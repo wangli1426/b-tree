@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.7)
 project(b_tree)
 
-#SET(CMAKE_CXX_FLAGS "-O0 -g")
+SET(CMAKE_CXX_FLAGS "-O0 -g")
 
 set(CMAKE_CXX_STANDARD 11)
 find_package(Threads REQUIRED)
@@ -43,7 +43,7 @@ target_link_libraries(b_tree libtree)
 
 # Generate btree_test executable for test
 set(TEST_FILES
-        test/test.cc test/leaf_node_test.cc test/inner_node_test.cc)
+        test/test.cc test/leaf_node_test.cc test/inner_node_test.cc test/b_plus_tree_test.cc)
 add_executable(btree_test ${TEST_FILES})
 target_link_libraries(btree_test libgtest)
 
