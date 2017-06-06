@@ -8,6 +8,7 @@
 #include <gtest/gtest_prod.h>
 #include <iostream>
 #include "node.h"
+#include "leaf_node.h"
 template <typename K, typename V, int CAPACITY>
 class InnerNode: public Node<K, V> {
     friend class InnerNodeTest;
@@ -82,7 +83,7 @@ public:
             else
                 is_split = static_cast<InnerNode<K, V, CAPACITY> *>(child_[target_node_index])->insert_with_split_support(
                         key, val, local_split);
-            
+
         }
 //            is_split = child_[target_node_index]->insert_with_split_support(key, val, local_split);
 
