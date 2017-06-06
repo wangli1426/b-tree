@@ -26,7 +26,7 @@ public:
         return root->point_search(k, v);
     }
 
-public:
+private:
     Node<K, V> *root;
 };
 

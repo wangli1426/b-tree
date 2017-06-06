@@ -14,7 +14,6 @@ TEST(InnerNodeTest, InsertWithoutSplit) {
     left_leaf->insert(1, 1);
     right_leaf->insert(3, 3);
     InnerNode<int, int, 4> inner_node(left_leaf, right_leaf);
-    std::cout << inner_node.toString() << std::endl;
     inner_node.insert(2, 2);
     EXPECT_EQ("3 [(1,1) (2,2)] [(3,3)]", inner_node.toString());
 
