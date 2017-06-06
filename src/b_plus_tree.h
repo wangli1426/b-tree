@@ -39,8 +39,8 @@ public:
 
     }
 
-    bool point_search(const K &k, V &v) const {
-        return root_->point_search(k, v);
+    bool search(const K &k, V &v) const {
+        return root_->search(k, v);
     }
 
     std::string toString() const {

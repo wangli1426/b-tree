@@ -40,13 +40,13 @@ TEST(LeafNode, Search) {
     leaf_node.insert(5, 8);
     leaf_node.insert(-1, 222);
     int result;
-    EXPECT_EQ(true, leaf_node.point_search(1, result));
+    EXPECT_EQ(true, leaf_node.search(1, result));
     EXPECT_EQ(5, result);
 
-    EXPECT_EQ(true, leaf_node.point_search(5, result));
+    EXPECT_EQ(true, leaf_node.search(5, result));
     EXPECT_EQ(8, result);
 
-    EXPECT_EQ(true, leaf_node.point_search(-1, result));
+    EXPECT_EQ(true, leaf_node.search(-1, result));
     EXPECT_EQ(222, result);
 }
 
@@ -59,15 +59,15 @@ TEST(LeafNode, Update) {
     int value;
 
     EXPECT_EQ(true, leaf_node.update(5, 100));
-    leaf_node.point_search(5, value);
+    leaf_node.search(5, value);
     EXPECT_EQ(100, value);
 
     EXPECT_EQ(true, leaf_node.update(3, 20));
-    leaf_node.point_search(3, value);
+    leaf_node.search(3, value);
     EXPECT_EQ(20, value);
 
     EXPECT_EQ(true, leaf_node.update(9, 44));
-    leaf_node.point_search(9, value);
+    leaf_node.search(9, value);
     EXPECT_EQ(44, value);
 }
 

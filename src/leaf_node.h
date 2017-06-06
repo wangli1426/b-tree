@@ -102,7 +102,7 @@ public:
 
     }
 
-    bool point_search(const K &k, V &v) const {
+    bool search(const K &k, V &v) const {
         int position;
         const bool found = search_key_position(k, position);
         if (found)

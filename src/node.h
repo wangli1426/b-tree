@@ -29,13 +29,13 @@ public:
     };
     virtual bool insert(const K &key, const V &val) = 0;
     virtual std::string toString() = 0;
-    virtual bool point_search(const K &k, V &v) const = 0;
+    virtual bool search(const K &k, V &v) const = 0;
     virtual bool update(const K &k, const V &v) = 0;
     virtual bool delete_key(const K &k) = 0;
     virtual bool insert_with_split_support(const K &key, const V &val, Split<K, V> &split) = 0;
     virtual const K get_leftmost_key() const = 0;
 
-    int id; // for debug;
+//    int id; // for debug;
 };
 
 

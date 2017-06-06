@@ -31,8 +31,10 @@ public:
         return targetNode->insert(key, val);
     }
 
-    bool point_search(const K &k, V &v) const {
-        return true;
+    bool search(const K &k, V &v) const {
+        const int index = locate_child_index(k);
+        Node<K, V>* targeNode = child_[index >=0 ? index : 0];
+        return targeNode->search(k, v);
     }
 
     bool update(const K &k, const V &v) {
@@ -58,11 +60,17 @@ public:
     }
 
     bool insert_with_split_support(const K &key, const V &val, Split<K, V> &split) {
-        int target_node_index = locate_child_index(key);
+        const int target_node_index = locate_child_index(key);
+        const bool exceed_left_boundary = target_node_index < 0;
         Split<K, V> local_split;
 
         // Insert into the target leaf node.
-        bool is_split = child_[target_node_index]->insert_with_split_support(key, val, local_split);
+        bool is_split;
+        if (exceed_left_boundary) {
+            is_split = child_[0]->insert_with_split_support(key, val, local_split);
+            key_[0] = key;
+        } else
+            is_split = child_[target_node_index]->insert_with_split_support(key, val, local_split);
 
         // The tuple was inserted without causing leaf node to split.
         if (!is_split)
@@ -70,8 +78,7 @@ public:
 
         // The leaf node was split.
         if (size_ < CAPACITY) {
-            // There is available slot in the current node for the new child.
-            insert_inner_node(local_split.right, local_split.boundary_key, target_node_index + 1);
+            insert_inner_node(local_split.right, local_split.boundary_key, target_node_index + 1 + exceed_left_boundary);
             return false;
         }
 
@@ -137,7 +144,7 @@ public:
     }
 private:
     // Locate the node that might contain the particular key.
-    int locate_child_index(K key) {
+    int locate_child_index(K key) const {
         if (size_ == 0)
             return -1;
         int l = 0, r = size_ - 1;

@@ -1,29 +1,37 @@
 #include <iostream>
+#include <set>
+#include <ctime>
+#include <malloc.h>
 
 #include "b_plus_tree.h"
 #include "inner_node.h"
 
 int main() {
-    BPlusTree<int, int, 4> tree;
-    tree.insert(1, 1);
-    tree.insert(3, 3);
-    tree.insert(2, 2);
-    tree.insert(6, 6);
+    std::set<int> s;
+    BPlusTree<int, int, 16> tree;
+    const size_t n_tuples = 1000000;
+    const size_t range = n_tuples * 10;
+    int* tuples = (int*) malloc(n_tuples * sizeof(int));
+
+    for (size_t i = 0; i < n_tuples; ++i) {
+        tuples[i] = (int)(std::rand() % range);
+    }
 
 
-    tree.insert(10, 10);
 
-    tree.insert(9, 9);
+    clock_t begin = clock();
 
-    tree.insert(8, 8);
+    for (int i = 0; i < n_tuples; ++i) {
+        tree.insert(tuples[i], tuples[i]);
+    }
 
-    tree.insert(7, 7);
-    tree.insert(4, 4);
-    tree.insert(5, 5);
+    clock_t end = clock();
 
-    tree.insert(11, 11);
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
 
-    std::cout << tree.toString() << std::endl;
-    tree.insert(12, 12);
-    std::cout << tree.toString() << std::endl;
+    int value;
+    std::cout << "inserted " << n_tuples << " tuples" << std::endl;
+    std::cout << n_tuples / elapsed_secs << " insertions / s" <<std::endl;
+    std::cout << elapsed_secs << " seconds" <<std::endl;
+    free(tuples);
 }
