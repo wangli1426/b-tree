@@ -35,6 +35,7 @@ public:
     virtual bool insert_with_split_support(const K &key, const V &val, Split<K, V> &split) = 0;
     virtual const K get_leftmost_key() const = 0;
 
+    bool is_leaf_;
 //    int id; // for debug;
 };
 

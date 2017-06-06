@@ -12,8 +12,11 @@ template <typename K, typename V, int CAPACITY>
 class InnerNode: public Node<K, V> {
     friend class InnerNodeTest;
 public:
-    InnerNode(): size_(0) {};
+    InnerNode(): size_(0) {
+        this->is_leaf_ = false;
+    };
     InnerNode(Node<K, V>* left, Node<K, V>* right) {
+        this->is_leaf_ = false;
         size_ = 2;
         key_[0] = left->get_leftmost_key();
         child_[0] = left;
@@ -67,10 +70,21 @@ public:
         // Insert into the target leaf node.
         bool is_split;
         if (exceed_left_boundary) {
-            is_split = child_[0]->insert_with_split_support(key, val, local_split);
+            if (child_[0]->is_leaf_)
+                is_split = static_cast<LeafNode<K, V, CAPACITY>*>(child_[0])->insert_with_split_support(key, val, local_split);
+            else
+                is_split = static_cast<InnerNode<K, V, CAPACITY>*>(child_[0])->insert_with_split_support(key, val, local_split);
             key_[0] = key;
-        } else
-            is_split = child_[target_node_index]->insert_with_split_support(key, val, local_split);
+        } else {
+            if (child_[target_node_index]->is_leaf_)
+                is_split = static_cast<LeafNode<K, V, CAPACITY> *>(child_[target_node_index])->insert_with_split_support(
+                        key, val, local_split);
+            else
+                is_split = static_cast<InnerNode<K, V, CAPACITY> *>(child_[target_node_index])->insert_with_split_support(
+                        key, val, local_split);
+            
+        }
+//            is_split = child_[target_node_index]->insert_with_split_support(key, val, local_split);
 
         // The tuple was inserted without causing leaf node to split.
         if (!is_split)

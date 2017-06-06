@@ -24,7 +24,9 @@ class LeafNode: public Node<K, V>{
 
 public:
 
-    LeafNode():size_(0){};
+    LeafNode():size_(0){
+        this->is_leaf_ = true;
+    };
 
     bool insert(const K &key, const V &val) {
 
