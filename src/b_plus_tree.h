@@ -22,19 +22,12 @@ public:
         delete root_;
     }
     void insert(const K &k, const V &v) {
-//        if (root_->insert(k,v))
-//            std::cout << k << "," << v << " is inserted" << std::endl;
-//        else
-//            std::cout << "full!" << std::endl;
-//
         Split<K, V> split;
         bool is_split = root_->insert_with_split_support(k, v, split);
         if (is_split) {
-//            if (depth_ == 1) {
-                InnerNode<K, V, CAPACITY> *new_inner_node = new InnerNode<K, V, CAPACITY>(split.left, split.right);
-                root_ = new_inner_node;
-                ++depth_;
-//            }
+            InnerNode<K, V, CAPACITY> *new_inner_node = new InnerNode<K, V, CAPACITY>(split.left, split.right);
+            root_ = new_inner_node;
+            ++depth_;
         }
 
     }

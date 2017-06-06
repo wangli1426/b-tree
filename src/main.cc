@@ -17,8 +17,6 @@ int main() {
         tuples[i] = (int)(std::rand() % range);
     }
 
-
-
     clock_t begin = clock();
 
     for (int i = 0; i < n_tuples; ++i) {

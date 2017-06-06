@@ -28,7 +28,7 @@ public:
 //        std::cout << id << " is deconstructed." << std::endl; // for debug
     };
     virtual bool insert(const K &key, const V &val) = 0;
-    virtual std::string toString() = 0;
+    virtual std::string toString() const = 0;
     virtual bool search(const K &k, V &v) const = 0;
     virtual bool update(const K &k, const V &v) = 0;
     virtual bool delete_key(const K &k) = 0;

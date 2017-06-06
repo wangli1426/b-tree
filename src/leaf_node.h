@@ -84,9 +84,13 @@ public:
             // move entries to the right node
             for (int i = entry_index_for_right_node, j = 0; i < CAPACITY; ++i, ++j) {
                 right->entries_[j] = left->entries_[i];
-                --left->size_;
-                ++right->size_;
+//                --left->size_;
+//                ++right->size_;
             }
+
+            const int moved = CAPACITY - entry_index_for_right_node;
+            left->size_ -= moved;
+            right->size_ = moved;
 
             // insert
             if (insert_to_first_half)
@@ -134,7 +138,7 @@ public:
         return true;
     }
 
-    std::string toString() {
+    std::string toString() const {
 //        std::string ret = std::to_string(this->id) + ": "; // for debug
         std::string ret;
         for (int i = 0; i < size_; i++) {
