@@ -55,6 +55,7 @@ public:
     virtual NodeType type() const = 0;
     virtual int size() const = 0;
 
+    bool is_leaf_;
 //    int id; // for debug;
 };
 

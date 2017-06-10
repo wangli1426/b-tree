@@ -8,16 +8,19 @@
 #include <gtest/gtest_prod.h>
 #include <iostream>
 #include "node.h"
+#include "leaf_node.h"
 
 template <typename K, typename V, int CAPACITY>
 class BPlusTree;
-
 template <typename K, typename V, int CAPACITY>
 class InnerNode: public Node<K, V> {
     friend class BPlusTree<K, V, CAPACITY>;
 public:
-    InnerNode(): size_(0) {};
+    InnerNode(): size_(0) {
+        this->is_leaf_ = false;
+    };
     InnerNode(Node<K, V>* left, Node<K, V>* right) {
+        this->is_leaf_ = false;
         size_ = 2;
         key_[0] = left->get_leftmost_key();
         child_[0] = left;
@@ -187,12 +190,23 @@ public:
         // Insert into the target leaf node.
         bool is_split;
         if (exceed_left_boundary) {
-            is_split = child_[0]->insert_with_split_support(key, val, local_split);
+            if (child_[0]->is_leaf_)
+                is_split = static_cast<LeafNode<K, V, CAPACITY>*>(child_[0])->insert_with_split_support(key, val, local_split);
+            else
+                is_split = static_cast<InnerNode<K, V, CAPACITY>*>(child_[0])->insert_with_split_support(key, val, local_split);
             key_[0] = key;
-        } else
-            is_split = child_[target_node_index]->insert_with_split_support(key, val, local_split);
+        } else {
+            if (child_[target_node_index]->is_leaf_)
+                is_split = static_cast<LeafNode<K, V, CAPACITY> *>(child_[target_node_index])->insert_with_split_support(
+                        key, val, local_split);
+            else
+                is_split = static_cast<InnerNode<K, V, CAPACITY> *>(child_[target_node_index])->insert_with_split_support(
+                        key, val, local_split);
 
-        // The tuple was inserted without causing leaf node to split.
+        }
+//            is_split = child_[target_node_index]->insert_with_split_support(key, val, local_split);
+
+        // The tuple was inserted without causing leaf node split.
         if (!is_split)
             return false;
 
@@ -272,6 +286,7 @@ public:
 protected:
     // Locate the node that might contain the particular key.
     int locate_child_index(K key) const {
+#ifdef BINARY_SEARCH
         if (size_ == 0)
             return -1;
         int l = 0, r = size_ - 1;
@@ -294,11 +309,14 @@ protected:
         } else {
             return l -  1;
         }
-
+#else
         // linear scan TODO: test the performance gap between binary search and linear scan.
-//        int i = 0;
-//        while (i < size_ && key_[i] < key) ++i;
-//        return i - 1;
+        if (key < key_[0])
+            return -1;
+        int i = 1;
+        while (i < size_ && key >= key_[i]) ++i;
+        return i - 1;
+#endif
     }
 
     K key_[CAPACITY]; // key_[0] is the smallest key for this inner node. The key boundaries start from index 1.

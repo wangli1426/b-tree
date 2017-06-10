@@ -25,7 +25,9 @@ class LeafNode: public Node<K, V>{
 
 public:
 
-    LeafNode():size_(0){};
+    LeafNode():size_(0){
+        this->is_leaf_ = true;
+    };
 
     bool insert(const K &key, const V &val) {
 
@@ -234,6 +236,7 @@ public:
 private:
 
     bool search_key_position(const K &key, int & position) const {
+#ifdef BINARY_SEARCH
         int l = 0, r = size_ - 1;
         int m = 0;
         bool found = false;
@@ -250,6 +253,17 @@ private:
         }
         position = l;
         return false;
+#else
+        int i = 0;
+        while ( i < size_ && key > entries_[i].key) ++i;
+        if (i == size_) {
+            position = i;
+            return false;
+        } else {
+            position = i;
+            return key == entries_[i].key;
+        }
+#endif
     }
 
     /**

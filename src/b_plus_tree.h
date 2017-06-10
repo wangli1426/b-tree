@@ -23,7 +23,13 @@ public:
     }
     void insert(const K &k, const V &v) {
         Split<K, V> split;
-        bool is_split = root_->insert_with_split_support(k, v, split);
+        bool is_split;
+        if (root_->is_leaf_) {
+            is_split = static_cast<LeafNode<K, V, CAPACITY> *>(root_)->insert_with_split_support(k, v, split);
+        } else {
+            is_split = static_cast<InnerNode<K, V, CAPACITY> *>(root_)->insert_with_split_support(k, v, split);
+        }
+//        bool is_split = root_->insert_with_split_support(k, v, split);
         if (is_split) {
             InnerNode<K, V, CAPACITY> *new_inner_node = new InnerNode<K, V, CAPACITY>(split.left, split.right);
             root_ = new_inner_node;
