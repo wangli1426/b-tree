@@ -32,6 +32,18 @@ public:
 
     }
 
+    bool delete_key(const K &k) {
+        Shrink shrink;
+        bool ret = root_->delete_key(k, shrink);
+        if (shrink.flag && root_->type() == INNER && root_->size() == 1) {
+            InnerNode<K, V, CAPACITY> *widow_inner_node = static_cast<InnerNode<K, V, CAPACITY>*>(root_);
+            root_ = widow_inner_node->child_[0];
+            widow_inner_node->size_ = 0;
+            delete widow_inner_node;
+        }
+        return ret;
+    }
+
     bool search(const K &k, V &v) const {
         return root_->search(k, v);
     }
@@ -39,6 +51,7 @@ public:
     std::string toString() const {
         return root_->toString();
     }
+
 
 private:
     Node<K, V> *root_;

@@ -3,6 +3,7 @@
 //
 
 #include <gtest/gtest.h>
+#include <vector>
 #include <iostream>
 #include <set>
 #include "../src/b_plus_tree.h"
@@ -80,6 +81,30 @@ TEST(BPlusTreeTest, InsertReverseOrderAndQueryTest) {
     }
 }
 
+TEST(BPlusTree, Search) {
+    BPlusTree<int, int, 4> tree;
+    int value;
+    EXPECT_EQ(false, tree.search(100, value));
+
+    tree.insert(100, 100);
+
+    EXPECT_EQ(false, tree.search(0, value));
+    EXPECT_EQ(false, tree.search(200, value));
+
+    tree.insert(101, 100);
+    tree.insert(110, 110);
+    tree.insert(150, 150);
+    tree.insert(170, 170);
+
+    EXPECT_EQ(false, tree.search(0, value));
+    EXPECT_EQ(false, tree.search(105, value));
+    EXPECT_EQ(false, tree.search(120, value));
+    EXPECT_EQ(false, tree.search(160, value));
+    EXPECT_EQ(false, tree.search(180, value));
+
+
+}
+
 TEST(BPlusTree, MassiveRandomInsertionAndQuery) {
     std::set<int> s;
     BPlusTree<int, int, 4> tree;
@@ -92,36 +117,6 @@ TEST(BPlusTree, MassiveRandomInsertionAndQuery) {
         tree.insert(r, r);
     }
 
-//    for (int i = 0; i < tuples; ++i) {
-//        const int r = std::rand() % range;
-//        size_t size = s.size();
-//        s.insert(r);
-//        if (size != s.size()) {
-//            if (r < 6) {
-//                std::cout << "small value " << std::endl;
-//            }
-//            tree.insert(r, r);
-//            int value = -1;
-//            bool result = tree.search(r, value);
-//            if (!result) {
-//                std::cout << "to insert " << r << std::endl;
-//                break;
-//            }
-//            EXPECT_EQ(r, value);
-//            std::cout << i <<": " << r << std::endl;
-//            std::cout << tree.toString() << std::endl;
-//        }
-//
-//    }
-
-//    for (std::set<int>::const_iterator iterator = s.cbegin(); iterator != s.cend(); ++iterator) {
-//        tree.insert(*iterator, *iterator);
-//        int value;
-//        tree.search(*iterator, value);
-//        EXPECT_EQ(*iterator, value);
-//        std::cout << *iterator << " is inserted." << std::endl;
-//    }
-
     for (int i = 0; i < range; ++i) {
         int value = -1;
         if (s.find(i) != s.cend()) {
@@ -131,5 +126,116 @@ TEST(BPlusTree, MassiveRandomInsertionAndQuery) {
             EXPECT_EQ(false, tree.search(i, value));
         }
     }
+}
+
+TEST(BPlusTree, DeleteWithoutMergeTest) {
+    BPlusTree<int, int, 4> tree;
+    tree.insert(1, 1);
+    tree.insert(2, 2);
+    tree.insert(3, 3);
+    tree.insert(4, 4);
+    tree.insert(5, 5);
+    tree.insert(6, 6);
+
+    tree.delete_key(4);
+    tree.delete_key(3);
+
+    EXPECT_EQ("3 [(1,1) (2,2)] [(5,5) (6,6)]", tree.toString());
+}
+
+TEST(BPlusTree, DeleteWithLeafNodeRebalancedAndMerged) {
+    BPlusTree<int, int, 4> tree;
+    tree.insert(1, 1);
+    tree.insert(2, 2);
+    tree.insert(3, 3);
+    tree.insert(4, 4);
+    tree.insert(5, 5);
+    tree.insert(6, 6);
+    tree.insert(7, 7);
+    tree.insert(8, 8);
+
+    tree.delete_key(4);
+    EXPECT_EQ("5 [(1,1) (2,2) (3,3)] [(5,5) (6,6) (7,7) (8,8)]", tree.toString());
+
+    tree.delete_key(4);
+    tree.delete_key(0);
+    tree.delete_key(1);
+    tree.delete_key(3);
+    EXPECT_EQ("6 [(2,2) (5,5)] [(6,6) (7,7) (8,8)]", tree.toString());
+
+    tree.delete_key(5);
+    tree.delete_key(6);
+
+    tree.delete_key(2);
+    EXPECT_EQ("(7,7) (8,8)", tree.toString());
+
+    tree.delete_key(7);
+    tree.delete_key(8);
+
+    EXPECT_EQ("", tree.toString());
+}
+
+
+TEST(BPlusTree, DeleteWithInnerNodeRebalancedAndMerged) {
+    BPlusTree<int, int, 4> tree;
+    tree.insert(1, 1);
+    tree.insert(2, 2);
+    tree.insert(3, 3);
+    tree.insert(4, 4);
+    tree.insert(5, 5);
+    tree.insert(6, 6);
+    tree.insert(7, 7);
+    tree.insert(8, 8);
+    tree.insert(9, 9);
+    tree.insert(10, 10);
+    tree.insert(11, 11);
+    tree.insert(12, 12);
+    tree.insert(13, 13);
+    tree.insert(14, 14);
+    tree.insert(15, 15);
+    tree.insert(16, 16);
+
+    tree.delete_key(16);
+    tree.delete_key(15);
+    tree.delete_key(14);
+    tree.delete_key(13);
+    tree.delete_key(12);
+
+    tree.delete_key(11);
+    tree.delete_key(10);
+    tree.delete_key(9);
+    tree.delete_key(8);
+    tree.delete_key(7);
+    tree.delete_key(6);
+    tree.delete_key(5);
+    tree.delete_key(4);
+    tree.delete_key(3);
+    tree.delete_key(2);
+    tree.delete_key(1);
+
+    EXPECT_EQ("", tree.toString());
+}
+
+TEST(BPlusTree, KeysInsertedAndDeletedInRandomOrder) {
+    const int number_of_tuples = 100000;
+    std::vector<int> tuples;
+    for (int i = 0; i < number_of_tuples; ++i) {
+        tuples.push_back(i);
+    }
+    std::random_shuffle(tuples.begin(), tuples.end());
+
+
+    BPlusTree<int, int, 4> tree;
+    for(std::vector<int>::const_iterator it = tuples.cbegin(); it != tuples.cend(); ++it) {
+        tree.insert(*it, *it);
+    }
+
+    std::random_shuffle(tuples.begin(), tuples.end());
+    for(std::vector<int>::const_iterator it = tuples.cbegin(); it != tuples.cend(); ++it) {
+        tree.delete_key(*it);
+    }
+
+    EXPECT_EQ("", tree.toString());
+
 }
 

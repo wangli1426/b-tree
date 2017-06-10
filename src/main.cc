@@ -1,7 +1,7 @@
 #include <iostream>
 #include <set>
 #include <ctime>
-#include <malloc.h>
+#include <stdlib.h>
 
 #include "b_plus_tree.h"
 #include "inner_node.h"

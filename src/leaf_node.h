@@ -7,6 +7,7 @@
 
 #include "node.h"
 
+
 template <typename K, typename V, int CAPACITY>
 class LeafNode: public Node<K, V>{
 
@@ -114,7 +115,7 @@ public:
         return found;
     }
 
-    virtual bool update(const K &k, const V &v) {
+    bool update(const K &k, const V &v) {
         int position;
         const bool found = search_key_position(k, position);
         if (found) {
@@ -125,7 +126,7 @@ public:
         }
 
     }
-    virtual bool delete_key(const K &k) {
+    bool delete_key(const K &k) {
         int position;
         const bool found = search_key_position(k, position);
         if (!found)
@@ -135,6 +136,20 @@ public:
             entries_[i] = entries_[i + 1];
         }
         -- size_;
+        return true;
+    }
+
+    bool delete_key(const K &k, Shrink &shrink) {
+        int position;
+        const bool found = search_key_position(k, position);
+        if (!found)
+            return false;
+
+        for (int i = position; i < size_ - 1; ++i) {
+            entries_[i] = entries_[i + 1];
+        }
+        -- size_;
+        shrink.flag = size_ < (CAPACITY + 1) / 2;
         return true;
     }
 
@@ -151,6 +166,69 @@ public:
 
     const K get_leftmost_key() const {
         return entries_[0].key;
+    }
+
+    bool balance(Node<K, V> *right_sibling_node, K &boundary) {
+        LeafNode<K, V, CAPACITY> *right = static_cast<LeafNode<K, V, CAPACITY>* >(right_sibling_node);
+        bool to_merge = false;
+        const int underflow_bound = UNDERFLOW_BOUND(CAPACITY);
+        if (size_ < underflow_bound) {
+            if (right->size_ > underflow_bound) {
+                entries_[size_] = right->entries_[0];
+                ++size_;
+                for (int i = 0; i < right->size_ - 1; ++i) {
+                    right->entries_[i] = right->entries_[i + 1];
+                }
+                --right->size_;
+                boundary = right->entries_[0].key;
+                return false;
+            } else {
+                to_merge = true;
+            }
+        }
+
+        if (right->size_ < underflow_bound) {
+            if (this->size_ > underflow_bound) {
+
+                // make space for the entry borrowed from the left
+                for (int i = right->size_ - 1; i >= 0; --i) {
+                    right->entries_[i + 1] = right->entries_[i];
+                }
+
+                // copy the entry and increase the size by 1
+                right->entries_[0] = this->entries_[size_ - 1];
+                ++right->size_;
+
+                --this->size_;
+
+                boundary = right->entries_[0].key;
+                return false;
+            } else {
+                to_merge = true;
+            }
+        }
+
+        if (to_merge) {
+            // move all the entries of the right to the left
+            for (int l = this->size_, r = 0; r < right->size_; ++l, ++r) {
+                this->entries_[l] = right->entries_[r];
+            }
+            this->size_ += right->size_;
+            right->size_ = 0;
+            // delete the right
+            delete right;
+            return true;
+        }
+
+
+    }
+
+    NodeType type() const {
+        return LEAF;
+    }
+
+    int size() const {
+        return size_;
     }
 
 private:

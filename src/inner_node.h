@@ -8,9 +8,13 @@
 #include <gtest/gtest_prod.h>
 #include <iostream>
 #include "node.h"
+
+template <typename K, typename V, int CAPACITY>
+class BPlusTree;
+
 template <typename K, typename V, int CAPACITY>
 class InnerNode: public Node<K, V> {
-    friend class InnerNodeTest;
+    friend class BPlusTree<K, V, CAPACITY>;
 public:
     InnerNode(): size_(0) {};
     InnerNode(Node<K, V>* left, Node<K, V>* right) {
@@ -33,7 +37,8 @@ public:
 
     bool search(const K &k, V &v) const {
         const int index = locate_child_index(k);
-        Node<K, V>* targeNode = child_[index >=0 ? index : 0];
+        if (index < 0) return false;
+        Node<K, V>* targeNode = child_[index];
         return targeNode->search(k, v);
     }
 
@@ -43,6 +48,121 @@ public:
 
     bool delete_key(const K &k) {
 
+    }
+
+    bool delete_key(const K &k, Shrink &shrink) {
+        int child_index = locate_child_index(k);
+        if (child_index < 0)
+            return false;
+
+        Node<K, V> *child = child_[child_index];
+        bool deleted = child->delete_key(k, shrink);
+        if (!deleted)
+            return false;
+
+        if (!shrink.flag || size_ < 2)
+            return true;
+
+
+        Node<K, V> *left_child, *right_child;
+        int left_child_index, right_child_index;
+        int deleted_child_index = -1;
+        K boundary;
+        if (child_index >= 1) {
+            left_child_index = child_index - 1;
+            right_child_index = child_index;
+        } else {
+            left_child_index = child_index;
+            right_child_index = child_index + 1;
+        }
+        left_child = child_[left_child_index];
+        right_child = child_[right_child_index];
+
+
+        // try to borrow a entry from the left. If no additional entry is available in the left, the two nodes will
+        // be merged with the right one being deleted.
+        bool merged = left_child->balance(right_child, boundary);
+
+        if (!merged) {
+            // if borrowed (not merged), update the boundary
+            key_[right_child_index] = boundary;
+            shrink.flag = false;
+            return true;
+        }
+
+        // merged
+
+        // remove the reference to the deleted child, i.e., right_child
+        for (int i = right_child_index; i < size_; ++i) {
+            this->key_[i] = this->key_[i + 1];
+            this->child_[i] = this->child_[i + 1];
+        }
+        --this->size_;
+
+        shrink.flag = this->size_ < UNDERFLOW_BOUND(CAPACITY);
+        return true;
+    }
+
+    virtual bool balance(Node<K, V> *sibling_node, K &boundary) {
+        const int underflow_bound = UNDERFLOW_BOUND(CAPACITY);
+        InnerNode<K, V, CAPACITY> *right = static_cast<InnerNode<K, V, CAPACITY>*>(sibling_node);
+        bool to_merge = false;
+        if (this->size_ < underflow_bound) {
+            if (right->size_ > underflow_bound) {
+                // this node will borrow one child node from the right sibling node.
+                this->key_[this->size_] = right->key_[0];
+                this->child_[this->size_] = right->child_[0];
+                ++this->size_;
+
+                // remove the involved child in the right sibling node
+                for (int  i = 0; i < right->size_; ++i) {
+                    right->key_[i] = right->key_[i + 1];
+                    right->child_[i] = right->child_[i + 1];
+                }
+                --right->size_;
+
+                // update the boundary
+                boundary = right->key_[0];
+                return false;
+            } else {
+                to_merge = true;
+            }
+        }
+
+        if (right->size_ < underflow_bound) {
+            if (this->size_ > underflow_bound) {
+                // make an empty slot for the entry to borrow.
+                for (int i = right->size_; i >= 0; --i) {
+                    right->key_[i + 1] = right->key_[i];
+                    right->child_[i + 1] = right->child_[i];
+                }
+                ++right->size_;
+
+                // copy the entry
+                right->key_[0] = this->key_[this->size_ - 1];
+                right->child_[0] = this->child_[this->size_ - 1];
+
+                --this->size_;
+
+                // update the boundary
+                boundary = right->key_[0];
+                return false;
+            } else {
+                to_merge = true;
+            }
+        }
+
+        if (!to_merge)
+            return false;
+
+        for (int l = this->size_, r = 0; r < right->size_; ++l, ++r) {
+            this->key_[l] = right->key_[r];
+            this->child_[l] = right->child_[r];
+        }
+        this->size_ += right->size_;
+        right->size_ = 0;
+        delete right;
+        return true;
     }
 
     void insert_inner_node(Node<K, V> * innerNode, K boundary_key, int insert_position) {
@@ -140,7 +260,16 @@ public:
     const K get_leftmost_key() const {
         return child_[0]->get_leftmost_key();
     }
-private:
+
+    NodeType type() const {
+        return INNER;
+    }
+
+    int size() const {
+        return size_;
+    }
+
+protected:
     // Locate the node that might contain the particular key.
     int locate_child_index(K key) const {
         if (size_ == 0)
