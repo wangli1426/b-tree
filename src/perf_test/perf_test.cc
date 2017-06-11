@@ -7,7 +7,7 @@
 
 double insertion_test() {
 
-    int runs = 50;
+    int runs = 10;
     double time = 0;
     int i = runs;
     while (i--) {

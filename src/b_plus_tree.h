@@ -20,6 +20,8 @@ public:
     ~BPlusTree() {
         delete root_;
     }
+
+    // Insert a k-v pair to the tree.
     void insert(const K &k, const V &v) {
         Split<K, V> split;
         bool is_split;
@@ -40,6 +42,7 @@ public:
 
     }
 
+    // Delete the entry from the tree. Return true if the key exists.
     bool delete_key(const K &k) {
         bool underflow;
         bool ret = root_->delete_key(k, underflow);
@@ -53,14 +56,16 @@ public:
         return ret;
     }
 
+    // Search for the value associated with the given key. If the key was found, return true and the value is stored
+    // in v.
     bool search(const K &k, V &v) const {
         return root_->search(k, v);
     }
 
+    // Return the string representation of the tree.
     std::string toString() const {
         return root_->toString();
     }
-
 
 private:
     Node<K, V> *root_;
