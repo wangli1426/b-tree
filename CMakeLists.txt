@@ -5,6 +5,7 @@ project(b_tree)
 SET(CMAKE_CXX_FLAGS "-g")
 
 #add_definitions(-DBINARY_SEARCH)
+add_definitions(-DVIRTUAL_FUNCTION_OPTIMIZATION)
 
 set(CMAKE_CXX_STANDARD 11)
 find_package(Threads REQUIRED)

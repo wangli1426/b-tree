@@ -17,10 +17,14 @@ class InnerNode: public Node<K, V> {
     friend class BPlusTree<K, V, CAPACITY>;
 public:
     InnerNode(): size_(0) {
+#ifdef VIRTUAL_FUNCTION_OPTIMIZATION
         this->is_leaf_ = false;
+#endif
     };
     InnerNode(Node<K, V>* left, Node<K, V>* right) {
+#ifdef VIRTUAL_FUNCTION_OPTIMIZATION
         this->is_leaf_ = false;
+#endif
         size_ = 2;
         key_[0] = left->get_leftmost_key();
         child_[0] = left;
@@ -53,17 +57,17 @@ public:
 
     }
 
-    bool delete_key(const K &k, Shrink &shrink) {
+    bool delete_key(const K &k, bool &underflow) {
         int child_index = locate_child_index(k);
         if (child_index < 0)
             return false;
 
         Node<K, V> *child = child_[child_index];
-        bool deleted = child->delete_key(k, shrink);
+        bool deleted = child->delete_key(k, underflow);
         if (!deleted)
             return false;
 
-        if (!shrink.flag || size_ < 2)
+        if (!underflow || size_ < 2)
             return true;
 
 
@@ -89,7 +93,7 @@ public:
         if (!merged) {
             // if borrowed (not merged), update the boundary
             key_[right_child_index] = boundary;
-            shrink.flag = false;
+            underflow = false;
             return true;
         }
 
@@ -102,7 +106,7 @@ public:
         }
         --this->size_;
 
-        shrink.flag = this->size_ < UNDERFLOW_BOUND(CAPACITY);
+        underflow = this->size_ < UNDERFLOW_BOUND(CAPACITY);
         return true;
     }
 
@@ -190,21 +194,28 @@ public:
         // Insert into the target leaf node.
         bool is_split;
         if (exceed_left_boundary) {
+#ifdef VIRTUAL_FUNCTION_OPTIMIZATION
             if (child_[0]->is_leaf_)
                 is_split = static_cast<LeafNode<K, V, CAPACITY>*>(child_[0])->insert_with_split_support(key, val, local_split);
             else
                 is_split = static_cast<InnerNode<K, V, CAPACITY>*>(child_[0])->insert_with_split_support(key, val, local_split);
+#else
+            is_split = child_[0]->insert_with_split_support(key, val, local_split);
+#endif
             key_[0] = key;
         } else {
+#ifdef VIRTUAL_FUNCTION_OPTIMIZATION
             if (child_[target_node_index]->is_leaf_)
                 is_split = static_cast<LeafNode<K, V, CAPACITY> *>(child_[target_node_index])->insert_with_split_support(
                         key, val, local_split);
             else
                 is_split = static_cast<InnerNode<K, V, CAPACITY> *>(child_[target_node_index])->insert_with_split_support(
                         key, val, local_split);
+#else
+            is_split = child_[target_node_index]->insert_with_split_support(key, val, local_split);
+#endif
 
         }
-//            is_split = child_[target_node_index]->insert_with_split_support(key, val, local_split);
 
         // The tuple was inserted without causing leaf node split.
         if (!is_split)

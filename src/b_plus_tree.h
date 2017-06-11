@@ -15,7 +15,6 @@ class BPlusTree {
 public:
     BPlusTree() {
         root_ = new LeafNode<K, V, CAPACITY>();
-        depth_ = 1;
     }
 
     ~BPlusTree() {
@@ -24,12 +23,15 @@ public:
     void insert(const K &k, const V &v) {
         Split<K, V> split;
         bool is_split;
+#ifdef VIRTUAL_FUNCTION_OPTIMIZATION
         if (root_->is_leaf_) {
             is_split = static_cast<LeafNode<K, V, CAPACITY> *>(root_)->insert_with_split_support(k, v, split);
         } else {
             is_split = static_cast<InnerNode<K, V, CAPACITY> *>(root_)->insert_with_split_support(k, v, split);
         }
-//        bool is_split = root_->insert_with_split_support(k, v, split);
+#else
+      is_split = root_->insert_with_split_support(k, v, split);
+#endif
         if (is_split) {
             InnerNode<K, V, CAPACITY> *new_inner_node = new InnerNode<K, V, CAPACITY>(split.left, split.right);
             root_ = new_inner_node;
@@ -39,13 +41,14 @@ public:
     }
 
     bool delete_key(const K &k) {
-        Shrink shrink;
-        bool ret = root_->delete_key(k, shrink);
-        if (shrink.flag && root_->type() == INNER && root_->size() == 1) {
+        bool underflow;
+        bool ret = root_->delete_key(k, underflow);
+        if (underflow && root_->type() == INNER && root_->size() == 1) {
             InnerNode<K, V, CAPACITY> *widow_inner_node = static_cast<InnerNode<K, V, CAPACITY>*>(root_);
             root_ = widow_inner_node->child_[0];
             widow_inner_node->size_ = 0;
             delete widow_inner_node;
+            --depth_;
         }
         return ret;
     }
