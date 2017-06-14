@@ -9,8 +9,8 @@
 
 
 TEST(InnerNodeTest, InsertWithoutSplit) {
-    LeafNode<int, int, 2>* left_leaf = new LeafNode<int, int, 2>();
-    LeafNode<int, int, 2>* right_leaf = new LeafNode<int, int, 2>();;
+    LeafNode<int, int, 2> *left_leaf = new LeafNode<int, int, 2>();
+    LeafNode<int, int, 2> *right_leaf = new LeafNode<int, int, 2>();;
     left_leaf->insert(1, 1);
     right_leaf->insert(3, 3);
     InnerNode<int, int, 4> inner_node(left_leaf, right_leaf);
@@ -23,8 +23,8 @@ TEST(InnerNodeTest, InsertWithoutSplit) {
 
 
 TEST(InnerNodeTest, InsertWithoutSplitWithSplitSupport) {
-    LeafNode<int, int, 2>* left_leaf = new LeafNode<int, int, 2>();
-    LeafNode<int, int, 2>* right_leaf = new LeafNode<int, int, 2>();;
+    LeafNode<int, int, 2> *left_leaf = new LeafNode<int, int, 2>();
+    LeafNode<int, int, 2> *right_leaf = new LeafNode<int, int, 2>();;
     left_leaf->insert(1, 1);
     right_leaf->insert(3, 3);
     InnerNode<int, int, 4> inner_node(left_leaf, right_leaf);
@@ -38,8 +38,8 @@ TEST(InnerNodeTest, InsertWithoutSplitWithSplitSupport) {
 }
 
 TEST(InnerNodeTest, InsertWithSplitWithSplitSupport) {
-    LeafNode<int, int, 2>* left_leaf = new LeafNode<int, int, 2>();
-    LeafNode<int, int, 2>* right_leaf = new LeafNode<int, int, 2>();;
+    LeafNode<int, int, 2> *left_leaf = new LeafNode<int, int, 2>();
+    LeafNode<int, int, 2> *right_leaf = new LeafNode<int, int, 2>();;
     left_leaf->insert(1, 1);
     right_leaf->insert(6, 6);
     InnerNode<int, int, 4> inner_node(left_leaf, right_leaf);
@@ -63,8 +63,8 @@ TEST(InnerNodeTest, InsertWithSplitWithSplitSupport) {
 }
 
 TEST(InnerNodeTest, InnerNodeSplit1) {
-    LeafNode<int, int, 2>* left_leaf = new LeafNode<int, int, 2>();
-    LeafNode<int, int, 2>* right_leaf = new LeafNode<int, int, 2>();;
+    LeafNode<int, int, 2> *left_leaf = new LeafNode<int, int, 2>();
+    LeafNode<int, int, 2> *right_leaf = new LeafNode<int, int, 2>();;
     left_leaf->insert(1, 1);
     left_leaf->insert(3, 3);
     right_leaf->insert(6, 6);
@@ -80,8 +80,8 @@ TEST(InnerNodeTest, InnerNodeSplit1) {
 }
 
 TEST(InnerNodeTest, InnerNodeSplit2) {
-    LeafNode<int, int, 2>* left_leaf = new LeafNode<int, int, 2>();
-    LeafNode<int, int, 2>* right_leaf = new LeafNode<int, int, 2>();;
+    LeafNode<int, int, 2> *left_leaf = new LeafNode<int, int, 2>();
+    LeafNode<int, int, 2> *right_leaf = new LeafNode<int, int, 2>();;
     left_leaf->insert(1, 1);
     left_leaf->insert(3, 3);
     right_leaf->insert(6, 6);

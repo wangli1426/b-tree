@@ -44,6 +44,7 @@ add_library(libtree ${SOURCE_FILES})
 add_executable(b_tree src/main.cc)
 target_link_libraries(b_tree libtree)
 
+add_executable(customized_data_type src/example/customized_data_types.cc)
 
 # Generate btree_test executable for test
 set(TEST_FILES

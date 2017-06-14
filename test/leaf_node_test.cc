@@ -24,7 +24,7 @@ TEST(LeafNode, InsertionWithOverflowDouble) {
     leafNode.insert(2.5, 5);
     leafNode.insert(-1.0, 5);
     leafNode.insert(-6.4, 2);
-    EXPECT_EQ("(-6.400000,2) (-1.000000,5) (1.300000,1) (2.500000,5) (3.200000,2)", leafNode.toString());
+    EXPECT_EQ("(-6.4,2) (-1,5) (1.3,1) (2.5,5) (3.2,2)", leafNode.toString());
 }
 
 TEST(LeafNode, InsertionAndUpdate) {

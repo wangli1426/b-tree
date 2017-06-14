@@ -34,7 +34,8 @@ TEST(BPlusTreeTest, InsertionTest) {
 
     tree.insert(11, 11);
     tree.insert(12, 12);
-    EXPECT_EQ("5 [3 [(1,1) (2,2)] [(3,3) (4,4)]] [8 10 [(5,5) (6,6) (7,7)] [(8,8) (9,9)] [(10,10) (11,11) (12,12)]]", tree.toString());
+    EXPECT_EQ("5 [3 [(1,1) (2,2)] [(3,3) (4,4)]] [8 10 [(5,5) (6,6) (7,7)] [(8,8) (9,9)] [(10,10) (11,11) (12,12)]]",
+              tree.toString());
 }
 
 TEST(BPlusTreeTest, InsertAndQueryTest) {
@@ -226,12 +227,12 @@ TEST(BPlusTree, KeysInsertedAndDeletedInRandomOrder) {
 
 
     BPlusTree<int, int, 4> tree;
-    for(std::vector<int>::const_iterator it = tuples.cbegin(); it != tuples.cend(); ++it) {
+    for (std::vector<int>::const_iterator it = tuples.cbegin(); it != tuples.cend(); ++it) {
         tree.insert(*it, *it);
     }
 
     std::random_shuffle(tuples.begin(), tuples.end());
-    for(std::vector<int>::const_iterator it = tuples.cbegin(); it != tuples.cend(); ++it) {
+    for (std::vector<int>::const_iterator it = tuples.cbegin(); it != tuples.cend(); ++it) {
         tree.delete_key(*it);
     }
 

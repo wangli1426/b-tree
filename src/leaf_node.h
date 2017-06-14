@@ -5,18 +5,24 @@
 #ifndef B_PLUS_TREE_LEAFNODE_H
 #define B_PLUS_TREE_LEAFNODE_H
 
+#include <sstream>
+#include <iostream>
+#include <string>
 #include "node.h"
 
 
-template <typename K, typename V, int CAPACITY>
-class LeafNode: public Node<K, V>{
+template<typename K, typename V, int CAPACITY>
+class LeafNode : public Node<K, V> {
 
     struct Entry {
         K key;
         V val;
-        Entry(){};
-        Entry(K k, V v): key(k), val(v){};
-        Entry& operator=(const Entry &r) {
+
+        Entry() {};
+
+        Entry(K k, V v) : key(k), val(v) {};
+
+        Entry &operator=(const Entry &r) {
             this->key = r.key;
             this->val = r.val;
             return *this;
@@ -25,7 +31,7 @@ class LeafNode: public Node<K, V>{
 
 public:
 
-    LeafNode():size_(0){
+    LeafNode() : size_(0) {
 #ifdef VIRTUAL_FUNCTION_OPTIMIZATION
         this->is_leaf_ = true;
 #endif
@@ -53,7 +59,7 @@ public:
 
             // insert the new entry.
             entries_[insert_position] = Entry(key, val);
-            size_ ++;
+            size_++;
             return true;
         }
     }
@@ -84,8 +90,8 @@ public:
             bool insert_to_first_half = insert_position < CAPACITY / 2;
 
             int entry_index_for_right_node = CAPACITY / 2;
-            LeafNode<K, V, CAPACITY>* const left = this;
-            LeafNode<K, V, CAPACITY>* const right = new LeafNode<K, V, CAPACITY>();
+            LeafNode<K, V, CAPACITY> *const left = this;
+            LeafNode<K, V, CAPACITY> *const right = new LeafNode<K, V, CAPACITY>();
 
             // move entries to the right node
             for (int i = entry_index_for_right_node, j = 0; i < CAPACITY; ++i, ++j) {
@@ -129,6 +135,7 @@ public:
         }
 
     }
+
     bool delete_key(const K &k) {
         int position;
         const bool found = search_key_position(k, position);
@@ -158,12 +165,13 @@ public:
 
     std::string toString() const {
         std::string ret;
+        std::stringstream ss;
         for (int i = 0; i < size_; i++) {
-            ret += "(" + std::to_string(entries_[i].key) + "," + std::to_string(entries_[i].val) + ")";
+            ss << "(" << entries_[i].key << "," << entries_[i].val << ")";
             if (i != size_ - 1)
-                ret += " ";
+                ss << " ";
         }
-        return ret;
+        return ss.str();
     }
 
     const K get_leftmost_key() const {
@@ -171,7 +179,7 @@ public:
     }
 
     bool balance(Node<K, V> *right_sibling_node, K &boundary) {
-        LeafNode<K, V, CAPACITY> *right = static_cast<LeafNode<K, V, CAPACITY>* >(right_sibling_node);
+        LeafNode<K, V, CAPACITY> *right = static_cast<LeafNode<K, V, CAPACITY> * >(right_sibling_node);
         const int underflow_bound = UNDERFLOW_BOUND(CAPACITY);
         if (size_ < underflow_bound) {
             // this node under-flows
@@ -237,9 +245,18 @@ public:
         return size_;
     }
 
+    friend std::ostream &operator<<(std::ostream &os, LeafNode<K, V, CAPACITY> const &m) {
+        for (int i = 0; i < m.size_; i++) {
+            os << "(" << m.entries_[i].key << "," << m.entries_[i].val << ")";
+            if (i != m.size_ - 1)
+                os << " ";
+        }
+        return os;
+    }
+
 private:
 
-    bool search_key_position(const K &key, int & position) const {
+    bool search_key_position(const K &key, int &position) const {
 #ifdef BINARY_SEARCH
         int l = 0, r = size_ - 1;
         int m = 0;
@@ -259,7 +276,7 @@ private:
         return false;
 #else
         int i = 0;
-        while ( i < size_ && key > entries_[i].key) ++i;
+        while (i < size_ && entries_[i].key < key) ++i;
         if (i == size_) {
             position = i;
             return false;

@@ -7,21 +7,26 @@
 
 #include <gtest/gtest_prod.h>
 #include <iostream>
+#include <sstream>
+#include <string>
 #include "node.h"
 #include "leaf_node.h"
 
-template <typename K, typename V, int CAPACITY>
+template<typename K, typename V, int CAPACITY>
 class BPlusTree;
-template <typename K, typename V, int CAPACITY>
-class InnerNode: public Node<K, V> {
+
+template<typename K, typename V, int CAPACITY>
+class InnerNode : public Node<K, V> {
     friend class BPlusTree<K, V, CAPACITY>;
+
 public:
-    InnerNode(): size_(0) {
+    InnerNode() : size_(0) {
 #ifdef VIRTUAL_FUNCTION_OPTIMIZATION
         this->is_leaf_ = false;
 #endif
     };
-    InnerNode(Node<K, V>* left, Node<K, V>* right) {
+
+    InnerNode(Node<K, V> *left, Node<K, V> *right) {
 #ifdef VIRTUAL_FUNCTION_OPTIMIZATION
         this->is_leaf_ = false;
 #endif
@@ -31,6 +36,7 @@ public:
         key_[1] = right->get_leftmost_key();
         child_[1] = right;
     }
+
     ~InnerNode() {
         for (int i = 0; i < size_; ++i) {
             delete child_[i];
@@ -38,14 +44,14 @@ public:
     }
 
     bool insert(const K &key, const V &val) {
-        Node<K, V>* targetNode = child_[locate_child_index(key)];
+        Node<K, V> *targetNode = child_[locate_child_index(key)];
         return targetNode->insert(key, val);
     }
 
     bool search(const K &k, V &v) const {
         const int index = locate_child_index(k);
         if (index < 0) return false;
-        Node<K, V>* targeNode = child_[index];
+        Node<K, V> *targeNode = child_[index];
         return targeNode->search(k, v);
     }
 
@@ -86,7 +92,7 @@ public:
         right_child = child_[right_child_index];
 
 
-        // try to borrow a entry from the left. If no additional entry is available in the left, the two nodes will
+        // try to borrow an entry from the left. If no additional entry is available in the left, the two nodes will
         // be merged with the right one being deleted.
         bool merged = left_child->balance(right_child, boundary);
 
@@ -112,8 +118,7 @@ public:
 
     virtual bool balance(Node<K, V> *sibling_node, K &boundary) {
         const int underflow_bound = UNDERFLOW_BOUND(CAPACITY);
-        InnerNode<K, V, CAPACITY> *right = static_cast<InnerNode<K, V, CAPACITY>*>(sibling_node);
-        bool to_merge = false;
+        InnerNode<K, V, CAPACITY> *right = static_cast<InnerNode<K, V, CAPACITY> *>(sibling_node);
         if (this->size_ < underflow_bound) {
             if (right->size_ > underflow_bound) {
                 // this node will borrow one child node from the right sibling node.
@@ -122,7 +127,7 @@ public:
                 ++this->size_;
 
                 // remove the involved child in the right sibling node
-                for (int  i = 0; i < right->size_; ++i) {
+                for (int i = 0; i < right->size_; ++i) {
                     right->key_[i] = right->key_[i + 1];
                     right->child_[i] = right->child_[i + 1];
                 }
@@ -131,8 +136,6 @@ public:
                 // update the boundary
                 boundary = right->key_[0];
                 return false;
-            } else {
-                to_merge = true;
             }
         }
 
@@ -154,13 +157,8 @@ public:
                 // update the boundary
                 boundary = right->key_[0];
                 return false;
-            } else {
-                to_merge = true;
             }
         }
-
-        if (!to_merge)
-            return false;
 
         for (int l = this->size_, r = 0; r < right->size_; ++l, ++r) {
             this->key_[l] = right->key_[r];
@@ -172,7 +170,7 @@ public:
         return true;
     }
 
-    void insert_inner_node(Node<K, V> * innerNode, K boundary_key, int insert_position) {
+    void insert_inner_node(Node<K, V> *innerNode, K boundary_key, int insert_position) {
 
         // make room for insertion.
         for (int i = size_ - 1; i >= insert_position; --i) {
@@ -183,7 +181,7 @@ public:
         key_[insert_position] = boundary_key;
         child_[insert_position] = innerNode;
 
-        ++ size_;
+        ++size_;
     }
 
     bool insert_with_split_support(const K &key, const V &val, Split<K, V> &split) {
@@ -196,9 +194,11 @@ public:
         if (exceed_left_boundary) {
 #ifdef VIRTUAL_FUNCTION_OPTIMIZATION
             if (child_[0]->is_leaf_)
-                is_split = static_cast<LeafNode<K, V, CAPACITY>*>(child_[0])->insert_with_split_support(key, val, local_split);
+                is_split = static_cast<LeafNode<K, V, CAPACITY> *>(child_[0])->insert_with_split_support(key, val,
+                                                                                                         local_split);
             else
-                is_split = static_cast<InnerNode<K, V, CAPACITY>*>(child_[0])->insert_with_split_support(key, val, local_split);
+                is_split = static_cast<InnerNode<K, V, CAPACITY> *>(child_[0])->insert_with_split_support(key, val,
+                                                                                                          local_split);
 #else
             is_split = child_[0]->insert_with_split_support(key, val, local_split);
 #endif
@@ -223,7 +223,8 @@ public:
 
         // The leaf node was split.
         if (size_ < CAPACITY) {
-            insert_inner_node(local_split.right, local_split.boundary_key, target_node_index + 1 + exceed_left_boundary);
+            insert_inner_node(local_split.right, local_split.boundary_key,
+                              target_node_index + 1 + exceed_left_boundary);
             return false;
         }
 
@@ -263,23 +264,24 @@ public:
     }
 
     std::string keys_to_string() const {
-        std::string ret = "";
+        std::stringstream ss;
         for (int i = 1; i < size_; ++i) {
-            ret += std::to_string(key_[i]);
+            ss << key_[i];
             if (i < size_ - 1)
-                ret += " ";
+                ss << " ";
         }
-        return ret;
+        return ss.str();
     }
 
     std::string nodes_to_string() const {
-        std::string ret = "";
+        std::stringstream ss;
         for (int i = 0; i < size_; ++i) {
-            ret += "[" + child_[i]->toString() + "]";
-            if (i != size_ - 1)
-                ret += " ";
+            ss << "[" << child_[i]->toString() << "]";
+            if (i != size_ - 1) {
+                ss << " ";
+            }
         }
-        return ret;
+        return ss.str();
     }
 
     const K get_leftmost_key() const {
@@ -292,6 +294,15 @@ public:
 
     int size() const {
         return size_;
+    }
+
+    friend std::ostream &operator<<(std::ostream &os, InnerNode<K, V, CAPACITY> const &m) {
+        for (int i = 0; i < m.size_; ++i) {
+            os << "[" << m.child_[i]->toString() << "]";
+            if (i != m.size_ - 1)
+                os << " ";
+        }
+        return os;
     }
 
 protected:
@@ -307,7 +318,7 @@ protected:
             m = (l + r) / 2;
             if (key_[m] < key) {
                 l = m + 1;
-            } else if (key_[m] > key) {
+            } else if (key < key_[m]) {
                 r = m - 1;
             } else {
                 found = true;
@@ -325,13 +336,13 @@ protected:
         if (key < key_[0])
             return -1;
         int i = 1;
-        while (i < size_ && key >= key_[i]) ++i;
+        while (i < size_ && !(key < key_[i])) ++i;
         return i - 1;
 #endif
     }
 
     K key_[CAPACITY]; // key_[0] is the smallest key for this inner node. The key boundaries start from index 1.
-    Node<K, V>* child_[CAPACITY];
+    Node<K, V> *child_[CAPACITY];
     int size_;
 };
 

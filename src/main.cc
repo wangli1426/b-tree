@@ -8,7 +8,7 @@
 #include "perf_test/perf_test.cc"
 
 int main() {
-    double time  = insertion_test();
+    double time = insertion_test();
     std::cout << time << std::endl;
 #ifdef MYDEFINE
     std::cout << "defined!" << std::endl;

@@ -10,23 +10,25 @@
 
 #define UNDERFLOW_BOUND(N) ((N + 1) / 2)
 
-template <typename K, typename V>
+template<typename K, typename V>
 class Node;
 
 // data structure that represents the information associated with node split
-template <typename K, typename V>
+template<typename K, typename V>
 struct Split {
     Node<K, V> *left;
     Node<K, V> *right;
     K boundary_key;
 };
 
-enum NodeType {LEAF, INNER};
+enum NodeType {
+    LEAF, INNER
+};
 
-template <typename K, typename V>
-class Node{
+template<typename K, typename V>
+class Node {
 public:
-    virtual ~Node(){};
+    virtual ~Node() {};
 
     // Insert an entry (key, val) into the node. Return false if there is no room for the new entry
     virtual bool insert(const K &key, const V &val) = 0;
@@ -50,10 +52,10 @@ public:
     virtual const K get_leftmost_key() const = 0;
 
     // This function is called when either this node or its right sibling node overflows. The underflow is solved by
-    // borrowing one entry from one node to the other, if the former node has more nodes than the underflow bound, or
+    // borrowing one entry from one node to the other, if the any node has more entries than the underflow bound, or
     // merging the two nodes if otherwise. If the function returns true, the two nodes was merged and the right sibling
-    // node was deleted. If the function returns false, the entries was redistributed between the two nodes and results
-    // in new key boundary.
+    // node was deleted. If the function returns false, the entries was redistributed between the two nodes and the new
+    // key boundary is stored in the boundary variable.
     virtual bool balance(Node<K, V> *right_sibling_node, K &boundary) = 0;
 
     // Get the type of the node.

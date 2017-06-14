@@ -10,7 +10,7 @@
 #include "inner_node.h"
 #include "node.h"
 
-template <typename K, typename V, int CAPACITY>
+template<typename K, typename V, int CAPACITY>
 class BPlusTree {
 public:
     BPlusTree() {
@@ -32,7 +32,7 @@ public:
             is_split = static_cast<InnerNode<K, V, CAPACITY> *>(root_)->insert_with_split_support(k, v, split);
         }
 #else
-      is_split = root_->insert_with_split_support(k, v, split);
+        is_split = root_->insert_with_split_support(k, v, split);
 #endif
         if (is_split) {
             InnerNode<K, V, CAPACITY> *new_inner_node = new InnerNode<K, V, CAPACITY>(split.left, split.right);
@@ -47,7 +47,7 @@ public:
         bool underflow;
         bool ret = root_->delete_key(k, underflow);
         if (underflow && root_->type() == INNER && root_->size() == 1) {
-            InnerNode<K, V, CAPACITY> *widow_inner_node = static_cast<InnerNode<K, V, CAPACITY>*>(root_);
+            InnerNode<K, V, CAPACITY> *widow_inner_node = static_cast<InnerNode<K, V, CAPACITY> *>(root_);
             root_ = widow_inner_node->child_[0];
             widow_inner_node->size_ = 0;
             delete widow_inner_node;
@@ -67,16 +67,13 @@ public:
         return root_->toString();
     }
 
+    friend std::ostream &operator<<(std::ostream &os, BPlusTree<K, V, CAPACITY> const &m) {
+        return os << m.root_->toString();
+    }
+
 private:
     Node<K, V> *root_;
     int depth_;
 };
-
-template <typename K, typename V, int CAPACITY>
-std::ostream &operator<<(std::ostream &os, BPlusTree<K, V, CAPACITY> const &m) {
-    return os << m.toString();
-}
-
-
 
 #endif //B_PLUS_TREE_BPLUSTREE_H
