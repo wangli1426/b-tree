@@ -14,7 +14,7 @@
 template<typename K, typename V, int CAPACITY>
 class LeafNode : public Node<K, V> {
 
-    struct Entry {
+    struct alignas(8) Entry {
         K key;
         V val;
 
@@ -258,11 +258,14 @@ private:
 
     bool search_key_position(const K &key, int &position) const {
 #ifdef BINARY_SEARCH
+#ifdef NODEPREFETCH
+        __builtin_prefetch(entries_, 0, 0);
+#endif
         int l = 0, r = size_ - 1;
         int m = 0;
         bool found = false;
         while (l <= r) {
-            m = (l + r) / 2;
+            m = (l + r) >> 1;
             if (entries_[m].key < key) {
                 l = m + 1;
             } else if (entries_[m].key == key) {
@@ -275,6 +278,9 @@ private:
         position = l;
         return false;
 #else
+#ifdef NODEPREFETCH
+        __builtin_prefetch(entries_, 0, 0);
+#endif
         int i = 0;
         while (i < size_ && entries_[i].key < key) ++i;
         if (i == size_) {

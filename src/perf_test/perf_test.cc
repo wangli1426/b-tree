@@ -3,38 +3,55 @@
 //
 
 #include <set>
+#include <string>
+#include <algorithm>
 #include "../b_plus_tree.h"
 
-double insertion_test() {
+using namespace std;
+void insertion_test(const string name, const int runs, const int tuples) {
 
-    int runs = 10;
-    double time = 0;
+    double build_time = 0, search_time = 0;
     int i = runs;
     while (i--) {
 
         std::set<int> s;
-        BPlusTree<int, int, 8> tree;
-        const size_t n_tuples = 1000000;
-        const size_t range = n_tuples * 10;
+        BPlusTree<int, int, 64> tree;
+        const size_t n_tuples = tuples;
         int *tuples = (int *) malloc(n_tuples * sizeof(int));
 
-        for (size_t i = 0; i < n_tuples; ++i) {
-            tuples[i] = (int) (std::rand() % range);
+        for (int i = 0; i < n_tuples; ++i) {
+            tuples[i] = i;
         }
 
-        clock_t begin = clock();
+        random_shuffle(&tuples[0], &tuples[n_tuples]);
 
+
+        int value;
+        clock_t begin = clock();
+//        std::sort(tuples, tuples + n_tuples);
         for (int i = 0; i < n_tuples; ++i) {
-            tree.insert(tuples[i], tuples[i]);
+            tree.insert(tuples[i], value);
         }
 
         clock_t end = clock();
 
         double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-        time += elapsed_secs;
+        build_time += elapsed_secs;
+
+
+
+        begin = clock();
+        for (int i = 0; i < n_tuples; ++i) {
+            tree.search(tuples[i], value);
+        }
+        end = clock();
+        search_time += double(end - begin) / CLOCKS_PER_SEC;
 
         free(tuples);
     }
 
-    return time / runs;
+    cout << "[" << name.c_str() << "]: " << "runs: " << runs << " tuples: " << tuples <<
+            " Insert: " << tuples * runs / build_time / 1000000 << " M tuples / s" <<
+            " Search: " << tuples * runs / search_time / 1000000 << " M tuples / s" <<
+         endl;
 }

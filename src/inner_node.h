@@ -311,11 +311,14 @@ protected:
 #ifdef BINARY_SEARCH
         if (size_ == 0)
             return -1;
+#ifdef NODEPREFETCH
+        __builtin_prefetch(key_, 0, 0);
+#endif
         int l = 0, r = size_ - 1;
         int m;
         bool found = false;
         while(l <= r) {
-            m = (l + r) / 2;
+            m = (l + r) >> 1;
             if (key_[m] < key) {
                 l = m + 1;
             } else if (key < key_[m]) {
@@ -335,6 +338,9 @@ protected:
         // linear scan TODO: test the performance gap between binary search and linear scan.
         if (key < key_[0])
             return -1;
+#ifdef NODEPREFETCH
+        __builtin_prefetch(key_, 0, 0);
+#endif
         int i = 1;
         while (i < size_ && !(key < key_[i])) ++i;
         return i - 1;
