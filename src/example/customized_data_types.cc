@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <string.h>
 #include "../b_plus_tree.h"
 
 // This is an example showing how to use customized data types in the B+tree.
