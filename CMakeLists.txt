@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.7)
 project(b_tree)
 
 SET(CMAKE_CXX_FLAGS "-O3")
-#SET(CMAKE_CXX_FLAGS "-g")
 
 add_definitions(-DBINARY_SEARCH)
 #add_definitions(-DVIRTUAL_FUNCTION_OPTIMIZATION)

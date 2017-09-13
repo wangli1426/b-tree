@@ -6,30 +6,37 @@
 #include <string>
 #include <algorithm>
 #include "../b_plus_tree.h"
+#include "../utility/generator.h"
 
 using namespace std;
-void insertion_test(const string name, const int runs, const int tuples) {
+void insertion_test(const string name, const int runs, const int ntuples, const int reads, double skewness) {
 
     double build_time = 0, search_time = 0;
     int i = runs;
+    ZipfGenerator generator(ntuples, skewness);
+
+    int *tuples = (int *) malloc(ntuples * sizeof(int));
+
+    for (int i = 0; i < ntuples; ++i) {
+        tuples[i] = i;
+    }
+
+    random_shuffle(&tuples[0], &tuples[ntuples - 1]);
+
+    int *search_keys = new int[reads];
+    for (int i = 0; i < reads; ++i) {
+        search_keys[i] = generator.gen();
+    }
+
     while (i--) {
 
         std::set<int> s;
         BPlusTree<int, int, 64> tree;
-        const size_t n_tuples = tuples;
-        int *tuples = (int *) malloc(n_tuples * sizeof(int));
-
-        for (int i = 0; i < n_tuples; ++i) {
-            tuples[i] = i;
-        }
-
-        random_shuffle(&tuples[0], &tuples[n_tuples]);
-
 
         int value;
         clock_t begin = clock();
 //        std::sort(tuples, tuples + n_tuples);
-        for (int i = 0; i < n_tuples; ++i) {
+        for (int i = 0; i < ntuples; ++i) {
             tree.insert(tuples[i], value);
         }
 
@@ -41,17 +48,17 @@ void insertion_test(const string name, const int runs, const int tuples) {
 
 
         begin = clock();
-        for (int i = 0; i < n_tuples; ++i) {
-            tree.search(tuples[i], value);
+        for (int i = 0; i < reads; ++i) {
+            tree.search(search_keys[i], value);
         }
         end = clock();
         search_time += double(end - begin) / CLOCKS_PER_SEC;
-
-        free(tuples);
     }
+    delete[] tuples;
+    delete[] search_keys;
 
-    cout << "[" << name.c_str() << "]: " << "runs: " << runs << " tuples: " << tuples <<
-            " Insert: " << tuples * runs / build_time / 1000000 << " M tuples / s" <<
-            " Search: " << tuples * runs / search_time / 1000000 << " M tuples / s" <<
+    cout << "[" << name.c_str() << "]: " << "#. of runs: " << runs << ", #. of tuples: " << tuples <<
+            ", Insert: " << ntuples * runs / build_time / 1000000 << " M tuples / s" <<
+            ", Search: " << ntuples * runs / search_time / 1000000 << " M tuples / s" <<
          endl;
 }
