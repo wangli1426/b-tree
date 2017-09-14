@@ -7,23 +7,27 @@
 #include <algorithm>
 #include "../trees/vanilla_b_plus_tree.h"
 #include "../utility/generator.h"
+#include "insert.h"
 
 using namespace std;
 template <typename K, typename V>
-void insertion_test(BTree<K, V> *tree, const string name, const int runs, const int ntuples, const int reads, double skewness) {
+void benchmark(BTree<K, V> *tree, const string name, const int runs, const int ntuples, const int reads,
+               double skewness) {
 
     double build_time = 0, search_time = 0;
     int run = runs;
     int found = 0;
     ZipfGenerator generator(ntuples, skewness);
 
-    int *tuples = new int[ntuples];
+//    int *tuples = new int[ntuples];
+
+    vector<pair<K, V>> tuples;
 
     for (int i = 0; i < ntuples; ++i) {
-        tuples[i] = i;
+        tuples.push_back(make_pair(i, i));
     }
 
-    random_shuffle(&tuples[0], &tuples[ntuples - 1]);
+    random_shuffle(tuples.begin(), tuples.end());
 
     int *search_keys = new int[reads];
     for (int i = 0; i < reads; ++i) {
@@ -37,11 +41,7 @@ void insertion_test(BTree<K, V> *tree, const string name, const int runs, const 
 
         int value;
         clock_t begin = clock();
-//        std::sort(tuples, tuples + n_tuples);
-        for (int i = 0; i < ntuples; ++i) {
-            tree->insert(tuples[i], tuples[i]);
-        }
-
+        insert<K, V>(tree, tuples, 1);
         clock_t end = clock();
 
         double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
@@ -53,14 +53,10 @@ void insertion_test(BTree<K, V> *tree, const string name, const int runs, const 
 
         for (int i = 0; i < reads; ++i) {
             found += tree->search(search_keys[i], value);
-//            if (found && rand() % 10000 == 0) {
-//                std::cout << "key: " << search_keys[i] << " val: " << value << std::endl;
-//            }
         }
         end = clock();
         search_time += double(end - begin) / CLOCKS_PER_SEC;
     }
-    delete[] tuples;
     delete[] search_keys;
 
     cout << "[" << name.c_str() << "]: " << "#. of runs: " << runs << ", #. of tuples: " << ntuples << " reads: "

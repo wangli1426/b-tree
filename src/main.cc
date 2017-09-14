@@ -10,5 +10,5 @@
 #include "utility/generator.h"
 int main() {
     VanillaBPlusTree<int, int, 64> bTree = VanillaBPlusTree<int, int, 64>();
-    insertion_test<int, int>(&bTree, "test1", 1, 1000000, 1000000, 0.25);
+    benchmark<int, int>(&bTree, "test1", 1, 1000000, 1000000, 0.25);
 }
