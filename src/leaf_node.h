@@ -31,7 +31,7 @@ class LeafNode : public Node<K, V> {
 
 public:
 
-    LeafNode() : size_(0) {
+    LeafNode() : size_(0), right_slibing_(0) {
 #ifdef VIRTUAL_FUNCTION_OPTIMIZATION
         this->is_leaf_ = true;
 #endif
@@ -92,6 +92,9 @@ public:
             int entry_index_for_right_node = CAPACITY / 2;
             LeafNode<K, V, CAPACITY> *const left = this;
             LeafNode<K, V, CAPACITY> *const right = new LeafNode<K, V, CAPACITY>();
+
+            right->right_slibing_ = left->right_slibing_;
+            left->right_slibing_ = right;
 
             // move entries to the right node
             for (int i = entry_index_for_right_node, j = 0; i < CAPACITY; ++i, ++j) {
@@ -231,6 +234,7 @@ public:
         }
         this->size_ += right->size_;
         right->size_ = 0;
+        this->right_sibling_ = right->right_sibling_;
 
         // delete the right
         delete right;
@@ -298,6 +302,7 @@ private:
      */
     Entry entries_[CAPACITY];
     int size_;
+    LeafNode* right_sibling_;
 
 };
 
