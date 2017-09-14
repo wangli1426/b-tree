@@ -9,8 +9,7 @@
 class ZipfGenerator {
 public:
     ZipfGenerator(int keys, double skew): n(keys), alpha(skew) {
-        if (alpha <= 0)
-            alpha = 0.00000001;
+
         for (int i = 1; i <= n; ++i) {
             c = c + (1.0 / pow((double) i, alpha));
         }
@@ -28,7 +27,7 @@ public:
             shuffles[i] = i;
         }
 
-        std::random_shuffle(&shuffles[0], &shuffles[keys - 1]);
+//        std::random_shuffle(&shuffles[0], &shuffles[keys - 1]);
     }
 
     ~ZipfGenerator() {
@@ -43,7 +42,7 @@ public:
 
         // Pull a uniform random number (0 < z < 1)
         do {
-            z = (double) rand() / RAND_MAX * 2.0 - 1.0;
+            z = (double) rand() / RAND_MAX;
         } while ((z == 0) || (z == 1));
 
         int l = 0, r = n - 1;

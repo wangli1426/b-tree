@@ -57,7 +57,7 @@ void insertion_test(const string name, const int runs, const int ntuples, const 
     delete[] tuples;
     delete[] search_keys;
 
-    cout << "[" << name.c_str() << "]: " << "#. of runs: " << runs << ", #. of tuples: " << tuples <<
+    cout << "[" << name.c_str() << "]: " << "#. of runs: " << runs << ", #. of tuples: " << ntuples <<
             ", Insert: " << ntuples * runs / build_time / 1000000 << " M tuples / s" <<
             ", Search: " << ntuples * runs / search_time / 1000000 << " M tuples / s" <<
          endl;
