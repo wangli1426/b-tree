@@ -7,6 +7,7 @@
 #include <algorithm>
 #include "../trees/vanilla_b_plus_tree.h"
 #include "../utility/generator.h"
+#include "../utility/rdtsc.h"
 #include "insert.h"
 
 using namespace std;
@@ -16,7 +17,9 @@ void benchmark(BTree<K, V> *tree, const string name, const int runs, const int n
 
     double build_time = 0, search_time = 0;
     int run = runs;
-    int found = 0;
+    int founds = 0;
+    int errors = 0;
+    uint64_t search_cycles = 0;
     ZipfGenerator generator(ntuples, skewness);
 
 //    int *tuples = new int[ntuples];
@@ -37,9 +40,7 @@ void benchmark(BTree<K, V> *tree, const string name, const int runs, const int n
     while (run--) {
         tree->clear();
         std::set<int> s;
-//        VanillaBPlusTree<int, int, 128> tree;
 
-        int value;
         clock_t begin = clock();
         insert<K, V>(tree, tuples, 1);
         clock_t end = clock();
@@ -50,17 +51,27 @@ void benchmark(BTree<K, V> *tree, const string name, const int runs, const int n
 
 
         begin = clock();
-
         for (int i = 0; i < reads; ++i) {
-            found += tree->search(search_keys[i], value);
+            int value;
+            const bool is_found = tree->search(search_keys[i], value);
+            if (is_found) {
+                ++founds;
+                if (value != search_keys[i]) {
+                    ++errors;
+                    std::cout << std::endl;
+                }
+            }
         }
         end = clock();
         search_time += double(end - begin) / CLOCKS_PER_SEC;
     }
     delete[] search_keys;
 
+    cout << errors << " errors." << endl;
+
     cout << "[" << name.c_str() << "]: " << "#. of runs: " << runs << ", #. of tuples: " << ntuples << " reads: "
-         << reads * runs <<" found: " << found << ", Insert: " << ntuples * runs / build_time / 1000000
+         << reads * runs <<" found: " << founds << ", Insert: " << ntuples * runs / build_time / 1000000
          << " M tuples / s" << ", Search: " << reads * runs / search_time / 1000000 << " M tuples / s" <<
          endl;
+
 }

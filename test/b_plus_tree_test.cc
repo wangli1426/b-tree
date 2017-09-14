@@ -109,7 +109,7 @@ TEST(BPlusTree, Search) {
 TEST(BPlusTree, MassiveRandomInsertionAndQuery) {
     std::set<int> s;
     VanillaBPlusTree<int, int, 4> tree;
-    const int tuples = 100000;
+    const int tuples = 1000000;
     const int range = tuples * 10;
 
     for (int i = 0; i < tuples; ++i) {

@@ -36,7 +36,8 @@ public:
     }
 
     int gen() {
-        double z = (double) rand() / RAND_MAX;                  // Uniform random number (0 < z < 1)
+//        return rand() % n;
+        double z = rand() / (double) RAND_MAX;            // Uniform random number (0 < z < 1)
 
         // Compute normalization constant on first call only
 
@@ -66,4 +67,6 @@ private:
     int *shuffles;
     double* sum_prob;
 };
+
+
 #endif //B_TREE_GENERATOR_H
