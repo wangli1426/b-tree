@@ -13,11 +13,11 @@
 #include "leaf_node.h"
 
 template<typename K, typename V, int CAPACITY>
-class BPlusTree;
+class VanillaBPlusTree;
 
 template<typename K, typename V, int CAPACITY>
 class InnerNode : public Node<K, V> {
-    friend class BPlusTree<K, V, CAPACITY>;
+    friend class VanillaBPlusTree<K, V, CAPACITY>;
 
 public:
     InnerNode() : size_(0) {

@@ -3,7 +3,7 @@
 //
 #include <gtest/gtest.h>
 #include <iostream>
-#include "../src/leaf_node.h"
+#include "../src/trees/leaf_node.h"
 
 TEST(LeafNode, InsertionWithOverflow) {
 

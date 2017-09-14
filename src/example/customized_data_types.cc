@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include <string.h>
-#include "../b_plus_tree.h"
+#include "../trees/vanilla_b_plus_tree.h"
 
 // This is an example showing how to use customized data types in the B+tree.
 
@@ -39,7 +39,7 @@ using namespace customized_data_types;
 
 int main() {
 
-    BPlusTree<string_pointer, long, 4> tree;
+    VanillaBPlusTree<string_pointer, long, 4> tree;
     const char *str = "abc123";
     tree.insert(string_pointer(str), 4);
     std::cout << "tree:" << tree << std::endl;
