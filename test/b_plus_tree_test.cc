@@ -109,7 +109,7 @@ TEST(BPlusTree, Search) {
 TEST(BPlusTree, MassiveRandomInsertionAndQuery) {
     std::set<int> s;
     VanillaBPlusTree<int, int, 4> tree;
-    const int tuples = 1000000;
+    const int tuples = 100000;
     const int range = tuples * 10;
 
     for (int i = 0; i < tuples; ++i) {
@@ -239,4 +239,70 @@ TEST(BPlusTree, KeysInsertedAndDeletedInRandomOrder) {
     EXPECT_EQ("", tree.toString());
 
 }
+
+TEST(BPlusTree, IteratorFullScanTest) {
+    const int number_of_tuples = 10000;
+    std::vector<int> tuples;
+    for (int i = 0; i < number_of_tuples; ++i) {
+        tuples.push_back(i);
+    }
+    std::random_shuffle(tuples.begin(), tuples.end());
+
+
+    VanillaBPlusTree<int, int, 4> tree;
+    for (std::vector<int>::const_iterator it = tuples.cbegin(); it != tuples.cend(); ++it) {
+        tree.insert(*it, *it);
+    }
+
+    BTree<int, int>::Iterator *it = tree.get_iterator();
+    int key, value;
+    int i = 0;
+    while(it->next(key, value)) {
+        EXPECT_EQ(i, key);
+        EXPECT_EQ(i, value);
+        i++;
+    }
+    delete it;
+}
+
+TEST(BPlusTree, IteratorRangeScanOnEmptyTreeTest) {
+    VanillaBPlusTree<int, int, 4> tree;
+    BTree<int, int>::Iterator *it = tree.range_search(INT_MIN, INT_MAX);
+    int k, v;
+    EXPECT_EQ(false, it->next(k, v));
+    delete it;
+}
+
+TEST(BPlusTree, IteratorRangeScanTest) {
+    const int number_of_tuples = 10000;
+    std::vector<int> tuples;
+    for (int i = 0; i < number_of_tuples; ++i) {
+        tuples.push_back(i);
+    }
+    std::random_shuffle(tuples.begin(), tuples.end());
+
+
+    VanillaBPlusTree<int, int, 4> tree;
+    for (std::vector<int>::const_iterator it = tuples.cbegin(); it != tuples.cend(); ++it) {
+        tree.insert(*it, *it);
+    }
+
+    const int runs = 100;
+    for (int i = 0; i < runs; i++) {
+        int start = rand() % number_of_tuples;
+        int end = rand() % number_of_tuples;
+        BTree<int, int>::Iterator *it = tree.range_search(start, end);
+        int key, value;
+        int founds = 0;
+        while (it->next(key, value)) {
+            EXPECT_EQ(founds + start, key);
+            EXPECT_EQ(founds + start, value);
+            founds++;
+        }
+        EXPECT_EQ(start <= end ? end - start + 1: 0, founds);
+        delete it;
+    }
+}
+
+
 

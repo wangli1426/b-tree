@@ -55,6 +55,14 @@ public:
         return targeNode->search(k, v);
     }
 
+
+    bool locate_key(const K &k, Node<K, V>* &child, int &index) {
+        index = locate_child_index(k);
+        if (index < 0) return false;
+        Node<K, V> *targeNode = child_[index];
+        return targeNode->locate_key(k, child, index);
+    }
+
     bool update(const K &k, const V &v) {
         return true;
     }
@@ -256,6 +264,10 @@ public:
         split.right = right;
         split.boundary_key = right->get_leftmost_key();
         return true;
+    }
+
+    Node<K, V>* get_leftmost_leaf_node() {
+        return child_[0]->get_leftmost_leaf_node();
     }
 
     std::string toString() const {

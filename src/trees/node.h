@@ -8,10 +8,15 @@
 #include <string>
 #include <iostream>
 
+#include "b_tree.h"
+
 #define UNDERFLOW_BOUND(N) ((N + 1) / 2)
 
 template<typename K, typename V>
 class Node;
+
+template<typename K, typename V>
+class BTree;
 
 // data structure that represents the information associated with node split
 template<typename K, typename V>
@@ -66,6 +71,10 @@ public:
 
     // Return the string representation of this node.
     virtual std::string toString() const = 0;
+
+    virtual Node* get_leftmost_leaf_node() = 0;
+
+    virtual bool locate_key(const K &key, Node* &child, int &offset) = 0;
 
     // Indicate if the node is a leaf node. This flag is used to avoid the overhead of virtual function call.
 #ifdef VIRTUAL_FUNCTION_OPTIMIZATION

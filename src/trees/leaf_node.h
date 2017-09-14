@@ -10,10 +10,12 @@
 #include <string>
 #include "node.h"
 
+template<typename K, typename V, int CAPACITY>
+class VanillaBPlusTree;
 
 template<typename K, typename V, int CAPACITY>
 class LeafNode : public Node<K, V> {
-
+    friend class VanillaBPlusTree<K, V, CAPACITY>;
     struct Entry {
         K key;
         V val;
@@ -31,7 +33,7 @@ class LeafNode : public Node<K, V> {
 
 public:
 
-    LeafNode() : size_(0), right_slibing_(0) {
+    LeafNode() : size_(0), right_sibling_(0) {
 #ifdef VIRTUAL_FUNCTION_OPTIMIZATION
         this->is_leaf_ = true;
 #endif
@@ -93,8 +95,8 @@ public:
             LeafNode<K, V, CAPACITY> *const left = this;
             LeafNode<K, V, CAPACITY> *const right = new LeafNode<K, V, CAPACITY>();
 
-            right->right_slibing_ = left->right_slibing_;
-            left->right_slibing_ = right;
+            right->right_sibling_ = left->right_sibling_;
+            left->right_sibling_ = right;
 
             // move entries to the right node
             for (int i = entry_index_for_right_node, j = 0; i < CAPACITY; ++i, ++j) {
@@ -126,6 +128,12 @@ public:
             v = entries_[position].val;
         return found;
     }
+
+    bool locate_key(const K &k, Node<K, V>* &child, int &position) {
+        const bool found = search_key_position(k, position);
+        child = this;
+        return found;
+    };
 
     bool update(const K &k, const V &v) {
         int position;
@@ -241,6 +249,10 @@ public:
         return true;
     }
 
+    virtual Node<K, V>* get_leftmost_leaf_node() {
+        return this;
+    }
+
     NodeType type() const {
         return LEAF;
     }
@@ -256,6 +268,15 @@ public:
                 os << " ";
         }
         return os;
+    }
+
+protected:
+    bool getEntry(int i, K &k, V &v) const {
+        if (i >= size_)
+            return false;
+        k = entries_[i].key;
+        v = entries_[i].val;
+        return true;
     }
 
 private:

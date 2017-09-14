@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 project(b_tree)
 
-SET(CMAKE_CXX_FLAGS "-O3 -pthread")
+SET(CMAKE_CXX_FLAGS "-O0 -g -pthread")
 
 add_definitions(-DBINARY_SEARCH)
 #add_definitions(-DVIRTUAL_FUNCTION_OPTIMIZATION)

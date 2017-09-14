@@ -77,6 +77,47 @@ public:
         return os << m.root_->toString();
     }
 
+    typename BTree<K, V>::Iterator* get_iterator() {
+        LeafNode<K, V, CAPACITY> *leftmost_leaf_node =
+                dynamic_cast<LeafNode<K, V, CAPACITY> *>(root_->get_leftmost_leaf_node());
+        return new Iterator(leftmost_leaf_node, 0);
+    }
+
+    typename BTree<K, V>::Iterator* range_search(const K & key_low, const K & key_high) {
+        Node<K, V> *leaf_node;
+        int offset;
+        root_->locate_key(key_low, leaf_node, offset);
+        return new Iterator(dynamic_cast<LeafNode<K, V, CAPACITY>*>(leaf_node), offset, key_high);
+    };
+
+    class Iterator: public BTree<K, V>::Iterator {
+    public:
+        Iterator(LeafNode<K, V, CAPACITY> *leaf_node, int offset): leaf_node_(leaf_node), offset_(offset),
+                                                                   upper_bound_(false) {};
+        Iterator(LeafNode<K, V, CAPACITY> *leaf_node, int offset, K key_high): leaf_node_(leaf_node), offset_(offset),
+                                                                   upper_bound_(true), key_high_(key_high) {};
+        virtual bool next(K & key, V & val) {
+            if (!leaf_node_)
+                return false;
+            else if (leaf_node_->getEntry(offset_, key, val)) {
+                offset_++;
+                return upper_bound_ ? key < key_high_ || key == key_high_ : true;
+            }
+            else if (leaf_node_->right_sibling_ != 0){
+                leaf_node_ = leaf_node_->right_sibling_;
+                offset_ = 0;
+                return next(key, val);
+            } else {
+                return false;
+            }
+        }
+    private:
+        LeafNode<K, V, CAPACITY> *leaf_node_;
+        int offset_;
+        bool upper_bound_;
+        K key_high_;
+    };
+
 private:
     void init() {
         root_ = new LeafNode<K, V, CAPACITY>();
