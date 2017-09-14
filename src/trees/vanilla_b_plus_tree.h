@@ -9,16 +9,22 @@
 #include "leaf_node.h"
 #include "inner_node.h"
 #include "node.h"
+#include "b_tree.h"
 
 template<typename K, typename V, int CAPACITY>
-class BPlusTree {
+class VanillaBPlusTree : public BTree<K, V> {
 public:
-    BPlusTree() {
-        root_ = new LeafNode<K, V, CAPACITY>();
+    VanillaBPlusTree() {
+        init();
     }
 
-    ~BPlusTree() {
+    ~VanillaBPlusTree() {
         delete root_;
+    }
+
+    void clear() {
+        delete root_;
+        init();
     }
 
     // Insert a k-v pair to the tree.
@@ -67,8 +73,14 @@ public:
         return root_->toString();
     }
 
-    friend std::ostream &operator<<(std::ostream &os, BPlusTree<K, V, CAPACITY> const &m) {
+    friend std::ostream &operator<<(std::ostream &os, VanillaBPlusTree<K, V, CAPACITY> const &m) {
         return os << m.root_->toString();
+    }
+
+private:
+    void init() {
+        root_ = new LeafNode<K, V, CAPACITY>();
+        depth_ = 1;
     }
 
 private:

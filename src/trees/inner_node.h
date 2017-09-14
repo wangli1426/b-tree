@@ -13,11 +13,11 @@
 #include "leaf_node.h"
 
 template<typename K, typename V, int CAPACITY>
-class BPlusTree;
+class VanillaBPlusTree;
 
 template<typename K, typename V, int CAPACITY>
 class InnerNode : public Node<K, V> {
-    friend class BPlusTree<K, V, CAPACITY>;
+    friend class VanillaBPlusTree<K, V, CAPACITY>;
 
 public:
     InnerNode() : size_(0) {
@@ -194,7 +194,7 @@ public:
         if (exceed_left_boundary) {
 #ifdef VIRTUAL_FUNCTION_OPTIMIZATION
             if (child_[0]->is_leaf_)
-                is_split = static_cast<LeafNode<K, V, CAPACITY> *>(child_[0])->insert_with_split_support(key, val,
+                is_split = static_cast<leaf_node<K, V, CAPACITY> *>(child_[0])->insert_with_split_support(key, val,
                                                                                                          local_split);
             else
                 is_split = static_cast<InnerNode<K, V, CAPACITY> *>(child_[0])->insert_with_split_support(key, val,
@@ -206,7 +206,7 @@ public:
         } else {
 #ifdef VIRTUAL_FUNCTION_OPTIMIZATION
             if (child_[target_node_index]->is_leaf_)
-                is_split = static_cast<LeafNode<K, V, CAPACITY> *>(child_[target_node_index])->insert_with_split_support(
+                is_split = static_cast<leaf_node<K, V, CAPACITY> *>(child_[target_node_index])->insert_with_split_support(
                         key, val, local_split);
             else
                 is_split = static_cast<InnerNode<K, V, CAPACITY> *>(child_[target_node_index])->insert_with_split_support(

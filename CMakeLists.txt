@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 project(b_tree)
 
-SET(CMAKE_CXX_FLAGS "-O3")
+SET(CMAKE_CXX_FLAGS "-O3 -pthread")
 
 add_definitions(-DBINARY_SEARCH)
 #add_definitions(-DVIRTUAL_FUNCTION_OPTIMIZATION)
@@ -41,8 +41,10 @@ set(SOURCE_FILES
 add_library(libtree ${SOURCE_FILES})
 
 # Generate b_tree executable
-add_executable(b_tree src/main.cc)
-target_link_libraries(b_tree libtree)
+add_executable(benchmark src/main.cc)
+target_link_libraries(benchmark libtree)
+
+add_executable(generator src/utility/generator_test.cc)
 
 add_executable(customized_data_type src/example/customized_data_types.cc)
 

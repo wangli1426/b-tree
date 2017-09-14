@@ -6,11 +6,11 @@
 #include <vector>
 #include <iostream>
 #include <set>
-#include "../src/b_plus_tree.h"
+#include "../src/trees/vanilla_b_plus_tree.h"
 
 
 TEST(BPlusTreeTest, InsertionTest) {
-    BPlusTree<int, int, 4> tree;
+    VanillaBPlusTree<int, int, 4> tree;
     tree.insert(1, 1);
     tree.insert(3, 3);
     tree.insert(2, 2);
@@ -39,7 +39,7 @@ TEST(BPlusTreeTest, InsertionTest) {
 }
 
 TEST(BPlusTreeTest, InsertAndQueryTest) {
-    BPlusTree<int, int, 5> tree;
+    VanillaBPlusTree<int, int, 5> tree;
     tree.insert(1, 1);
     tree.insert(3, 3);
     tree.insert(6, 6);
@@ -61,7 +61,7 @@ TEST(BPlusTreeTest, InsertAndQueryTest) {
 }
 
 TEST(BPlusTreeTest, InsertReverseOrderAndQueryTest) {
-    BPlusTree<int, int, 2> tree;
+    VanillaBPlusTree<int, int, 2> tree;
     tree.insert(11, 11);
     tree.insert(12, 12);
     tree.insert(10, 10);
@@ -83,7 +83,7 @@ TEST(BPlusTreeTest, InsertReverseOrderAndQueryTest) {
 }
 
 TEST(BPlusTree, Search) {
-    BPlusTree<int, int, 4> tree;
+    VanillaBPlusTree<int, int, 4> tree;
     int value;
     EXPECT_EQ(false, tree.search(100, value));
 
@@ -108,8 +108,8 @@ TEST(BPlusTree, Search) {
 
 TEST(BPlusTree, MassiveRandomInsertionAndQuery) {
     std::set<int> s;
-    BPlusTree<int, int, 4> tree;
-    const int tuples = 100000;
+    VanillaBPlusTree<int, int, 4> tree;
+    const int tuples = 1000000;
     const int range = tuples * 10;
 
     for (int i = 0; i < tuples; ++i) {
@@ -130,7 +130,7 @@ TEST(BPlusTree, MassiveRandomInsertionAndQuery) {
 }
 
 TEST(BPlusTree, DeleteWithoutMergeTest) {
-    BPlusTree<int, int, 4> tree;
+    VanillaBPlusTree<int, int, 4> tree;
     tree.insert(1, 1);
     tree.insert(2, 2);
     tree.insert(3, 3);
@@ -145,7 +145,7 @@ TEST(BPlusTree, DeleteWithoutMergeTest) {
 }
 
 TEST(BPlusTree, DeleteWithLeafNodeRebalancedAndMerged) {
-    BPlusTree<int, int, 4> tree;
+    VanillaBPlusTree<int, int, 4> tree;
     tree.insert(1, 1);
     tree.insert(2, 2);
     tree.insert(3, 3);
@@ -178,7 +178,7 @@ TEST(BPlusTree, DeleteWithLeafNodeRebalancedAndMerged) {
 
 
 TEST(BPlusTree, DeleteWithInnerNodeRebalancedAndMerged) {
-    BPlusTree<int, int, 4> tree;
+    VanillaBPlusTree<int, int, 4> tree;
     tree.insert(1, 1);
     tree.insert(2, 2);
     tree.insert(3, 3);
@@ -226,7 +226,7 @@ TEST(BPlusTree, KeysInsertedAndDeletedInRandomOrder) {
     std::random_shuffle(tuples.begin(), tuples.end());
 
 
-    BPlusTree<int, int, 4> tree;
+    VanillaBPlusTree<int, int, 4> tree;
     for (std::vector<int>::const_iterator it = tuples.cbegin(); it != tuples.cend(); ++it) {
         tree.insert(*it, *it);
     }

@@ -14,7 +14,7 @@
 template<typename K, typename V, int CAPACITY>
 class LeafNode : public Node<K, V> {
 
-    struct alignas(8) Entry {
+    struct Entry {
         K key;
         V val;
 

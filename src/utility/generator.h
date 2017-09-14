@@ -8,9 +8,8 @@
 
 class ZipfGenerator {
 public:
-    ZipfGenerator(int keys, double skew): n(keys), alpha(skew) {
-        if (alpha <= 0)
-            alpha = 0.00000001;
+    explicit ZipfGenerator(int keys, double skew): n(keys), alpha(skew), sum_prob(0), shuffles(0) {
+
         for (int i = 1; i <= n; ++i) {
             c = c + (1.0 / pow((double) i, alpha));
         }
@@ -37,25 +36,21 @@ public:
     }
 
     int gen() {
-        double z;                  // Uniform random number (0 < z < 1)
+//        return rand() % n;
+        double z = rand() / (double) RAND_MAX;            // Uniform random number (0 < z < 1)
 
         // Compute normalization constant on first call only
 
-        // Pull a uniform random number (0 < z < 1)
-        do {
-            z = (double) rand() / RAND_MAX * 2.0 - 1.0;
-        } while ((z == 0) || (z == 1));
 
         int l = 0, r = n - 1;
         int m = 0;
-        bool found = false;
         while (l <= r) {
             m = (l + r) >> 1;
             if (sum_prob[m] < z) {
                 l = m + 1;
             } else if (sum_prob[m] == z) {
                 l = m;
-                return true;
+                break;
             } else {
                 r = m - 1;
             }
@@ -72,4 +67,6 @@ private:
     int *shuffles;
     double* sum_prob;
 };
+
+
 #endif //B_TREE_GENERATOR_H

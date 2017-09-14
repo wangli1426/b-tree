@@ -4,8 +4,8 @@
 
 #include <gtest/gtest.h>
 #include <iostream>
-#include "../src/inner_node.h"
-#include "../src/leaf_node.h"
+#include "../src/trees/inner_node.h"
+#include "../src/trees/leaf_node.h"
 
 
 TEST(InnerNodeTest, InsertWithoutSplit) {
