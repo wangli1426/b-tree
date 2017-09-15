@@ -48,7 +48,7 @@ public:
         return targetNode->insert(key, val);
     }
 
-    bool search(const K &k, V &v) const {
+    bool search(const K &k, V &v) {
         const int index = locate_child_index(k);
         if (index < 0) return false;
         Node<K, V> *targeNode = child_[index];

@@ -64,7 +64,7 @@ public:
 
     // Search for the value associated with the given key. If the key was found, return true and the value is stored
     // in v.
-    bool search(const K &k, V &v) const {
+    bool search(const K &k, V &v) {
         return root_->search(k, v);
     }
 
@@ -124,7 +124,7 @@ private:
         depth_ = 1;
     }
 
-private:
+protected:
     Node<K, V> *root_;
     int depth_;
 };

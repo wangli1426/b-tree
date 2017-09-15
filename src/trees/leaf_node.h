@@ -121,7 +121,7 @@ public:
 
     }
 
-    bool search(const K &k, V &v) const {
+    bool search(const K &k, V &v) {
         int position;
         const bool found = search_key_position(k, position);
         if (found)

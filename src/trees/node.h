@@ -44,7 +44,7 @@ public:
 
     // Search for the value associated with the given key. Return false, if the key is not found. Otherwise, return
     // true and the value is stored in v.
-    virtual bool search(const K &k, V &v) const = 0;
+    virtual bool search(const K &k, V &v) = 0;
 
     // Update the value associated with the given key. Return true if such a key is found. Otherwise, return false.
     virtual bool update(const K &k, const V &v) = 0;
